@@ -1,0 +1,30 @@
+Laravel 5
+==========
+
+return view (.blade.php khas untuk laravel)
+MVC
+Model --> Database & SQL
+View --> Coding designing
+Controller --> Logik process + file js
+
+
+home.blade.php --> Mengelakkan masalah semasa penukaran sistem ke server berlainan
+		<link href="{{ URL::asset('css/bootstrap.min.css') }}" rel="stylesheet">
+		<link href="{{ URL::asset('js/javascript.js') }}" rel="stylesheet">
+		
+		Buat Master dulu
+
+
+- Kenalpasti object yang terlibat :
+	Aduan 
+		MVC
+		Model - complain.php
+		* create model ( cmd : php artisan make:model Complain)
+		Views - complains (create.php - form add| edit.php - form edit| show.php - display | index.php - listing )
+		Controller - complain.php (controller)
+		* cek controller (cmd : php artisan )
+		* Create controller (cmd :php artisan make:controller ComplainController --resource )
+		* cek route (cmd : php artisan route:list)
+		* Auto route (code-route.php : Route::resource('complain','ComplainController');)
+	Aset
+	User
