@@ -25,10 +25,10 @@ class ComplainRequest extends Request
     {
         switch($this->method()){
             case 'POST' : {
-                return ['ADUAN'=>'required'];
+                return ['complain_description'=>'required'];
             }
             case 'PUT' : {
-                return ['ADUAN'=>'required'];
+                return ['complain_description'=>'required'];
             }
             default:break;
         }
@@ -38,7 +38,7 @@ class ComplainRequest extends Request
     public function messages()
     {
         return [
-            'ADUAN.required' => 'test!'
+            'complain_description.required' => 'test!'
         ];
     }
 }

@@ -39,18 +39,19 @@
                     <div class="col-sm-6">
                         <div class="input-group">
 
-                            {!! Form::select('LOGIN_DAFTAR',$users,'',['class'=>'form-control']); !!}
+                            {!! Form::select('user_emp_id',$users,'',['class'=>'form-control chosen']); !!}
                         </div><!-- /input-group -->
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 col-xs-12 control-label">Kategori</label>
                     <div class="col-sm-3 col-xs-10">
-                        <select class="form-control input-sm" name="kod_kategori">
-                            <option value="1">Zakat2u</option>
-                            <option value="2">Call Center</option>
-                            <option value="3">Aplikasi</option>
-                        </select>
+                        {!! Form::select('complain_category_id',$complain_categories,'',['class'=>'form-control chosen']); !!}
+                        {{--<select class="form-control input-sm" name="complain_category_id">--}}
+                            {{--<option value="1">Zakat2u</option>--}}
+                            {{--<option value="2">Call Center</option>--}}
+                            {{--<option value="3">Aplikasi</option>--}}
+                        {{--</select>--}}
                     </div>
                     <label class="col-sm-1 col-xs-2 control-label">
                         <span class="pull-left symbol"> * </span>
@@ -73,17 +74,18 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Kaedah</label>
                     <div class="col-sm-3">
-                        <select class="form-control input-sm">
-                            <option>Telefon</option>
-                            <option>Email</option>
-                            <option>Mesej</option>
-                        </select>
+                        {!! Form::select('complain_source_id',$complain_sources,'',['class'=>'form-control chosen']); !!}
+                        {{--<select class="form-control input-sm" name="complain_source_id">--}}
+                            {{--<option value="1">Telefon</option>--}}
+                            {{--<option value="2">Email</option>--}}
+                            {{--<option value="3">Mesej</option>--}}
+                        {{--</select>--}}
                     </div>
                 </div>
-                <div class="form-group {{ $errors->has('ADUAN') ? 'has-error' : false }} ">
+                <div class="form-group {{ $errors->has('complain_description') ? 'has-error' : false }} ">
                     <label class="col-sm-2 control-label">Aduan</label>
                     <div class="col-sm-6">
-                        <textarea name="ADUAN" class="form-control" rows="3">{{old('ADUAN')}}</textarea>
+                        <textarea name="complain_description" class="form-control" rows="3">{{old('complain_description')}}</textarea>
                     </div>
                 </div>
                 <div class="form-group">

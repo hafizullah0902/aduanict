@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\ComplainCategory;
+use App\ComplainSource;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -42,9 +44,17 @@ class ComplainController extends Controller
     public function create()
     {
         $users = User::where('id','!=',Auth::user()->id)->lists('name','id');
-        $users = array(''=>'Select Bagi Pihak') + $users->all();
-        return view('complains/create',compact('users'));
+        $users = array(''=>'Pilih Bagi Pihak') + $users->all();
+
+        $complain_categories = $this->get_complain_categories();
+        
+        $complain_sources = ComplainSource::lists('description','source_id');
+        $complain_sources = array(''=>'Pilih Saluran Aduan') + $complain_sources->all();
+
+        return view('complains/create',compact('users','complain_categories','complain_sources'));
     }
+
+
 
     /**
      * Store a newly created resource in storage.
@@ -65,7 +75,7 @@ class ComplainController extends Controller
         ];
 
         $validator = Validator::make($request->all(), [
-            'ADUAN' => 'required',
+            'complain_description' => 'required',
         ],$messages);
 
         if ($validator->fails()) {
@@ -73,21 +83,33 @@ class ComplainController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         } else {*/
-            $emp_id_aduan = Auth::user()->id;
-            $kod_status=1;
-            $ADUAN = $request->ADUAN;
-            $login_daftar = $request->LOGIN_DAFTAR;
-            if(empty($login_daftar))
+            $user_id = Auth::user()->id;
+
+            $complain_status_id=1;
+            $complain_description = $request->complain_description;
+            $user_id = $request->user_emp_id;
+            $complain_source_id = $request->complain_source_id;
+            $complain_category_id = $request->complain_category_id;
+
+
+            if(empty($user_id))
             {
-                $login_daftar=Auth::user()->id;
+                $user_id=Auth::user()->id;
             }
+
             //initilize object
             $complain = new Complain;
-            $complain->emp_id_aduan = $emp_id_aduan;
-            $complain->ADUAN = $ADUAN;
-            $complain->KOD_STATUS = $kod_status;
-            $complain->LOGIN_DAFTAR=$login_daftar;
+            $complain->user_id = $user_id;
+            $complain->complain_description = $complain_description;
+            $complain->complain_status_id = $complain_status_id;
+            $complain->user_emp_id=$user_id;
+            $complain->complain_source_id=$complain_source_id;
+            $complain->complain_category_id=$complain_category_id;
+
+//            return $request->all();
             //save rekod
+
+
             $complain->save();
             // url selepas berjaya
             return redirect(route('complain.index'));
@@ -116,8 +138,12 @@ class ComplainController extends Controller
     public function edit($id)
     {
         $editComplain=Complain::find($id);
+
+        $complain_categories = $this->get_complain_categories();
 //        return $editComplain;
-        return view('complains/edit',compact('editComplain'));
+
+        return view('complains/edit',compact('editComplain','complain_categories'));
+        //return view('complains/edit',compact('editComplain'));
     }
 
     /**
@@ -129,11 +155,11 @@ class ComplainController extends Controller
      */
     public function update(ComplainRequest $request, $id)
     {
-        $ADUAN = $request->ADUAN;
+        $complain_description = $request->complain_description;
 
         $complain=Complain::find();
 
-        $complain->ADUAN=$ADUAN;
+        $complain->complain_description=$complain_description;
         $complain->save();
 
         return back();
@@ -152,5 +178,14 @@ class ComplainController extends Controller
         $complain->delete();
 
         return back();
+    }
+
+
+    function get_complain_categories()
+    {
+        $complain_categories = ComplainCategory::lists('description','category_id');
+        $complain_categories = array(''=>'Pilih Kategori Aduan') + $complain_categories->all();
+
+        return $complain_categories;
     }
 }

@@ -3,7 +3,7 @@
 
     @include('layout/alert_message')
 
-    {!! Form::open(array('route' => ['complain.update',$editComplain->ADUAN_ID],'method'=>'put','class'=>"form-horizontal")) !!}
+    {!! Form::open(array('route' => ['complain.update',$editComplain->complain_id],'method'=>'put','class'=>"form-horizontal")) !!}
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">Maklumat Aduan</h3>
@@ -13,33 +13,30 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Tarikh </label>
                     <div class="col-sm-2">
-                        <p class="form-control-static"><?php echo date('d/m/Y') ; ?></p>
+                        <p class="form-control-static">{{$editComplain->created_at}}</p>
                     </div>
-                    <label class="col-sm-2 control-label">Masa </label>
-                    <div class="col-sm-2">
-                        <p class="form-control-static"><?php echo date('H:i:s') ; ?></p>
-                    </div>
+
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">No.Id </label>
                     <div class="col-sm-2">
-                        <p class="form-control-static">{{$editComplain->ADUAN_ID}}</p>
+                        <p class="form-control-static">{{$editComplain->complain_id}}</p>
                     </div>
                     <label class="col-sm-2 control-label">No. Pekerja </label>
                     <div class="col-sm-2">
-                        <p class="form-control-static">{{$editComplain->EMP_ID_ADUAN}}</p>
+                        <p class="form-control-static">{{$editComplain->user_id}}</p>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Bagi Pihak</label>
                     <div class="col-sm-2">
-                        <p class="form-control-static">- </p>
+                        <p class="form-control-static">{{$editComplain->user_emp_id}}</p>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Kategori</label>
                     <div class="col-sm-2">
-                        <p class="form-control-static">Perkakasan </p>
+                        <p class="form-control-static">{!! Form::select('complain_category_id',$complain_categories,$editComplain->complain_category_id,['class'=>'form-control chosen']); !!} </p>
                     </div>
                 </div>
                 <div class="form-group">
@@ -54,10 +51,10 @@
                         <p class="form-control-static">Telefon </p>
                     </div>
                 </div>
-                <div class="form-group {{ $errors->has('ADUAN') ? 'has-error' : false }} ">
+                <div class="form-group {{ $errors->has('complain_description') ? 'has-error' : false }} ">
                     <label class="col-sm-2 control-label">Aduan</label>
                     <div class="col-sm-6">
-                        <textarea name="aduan" class="form-control">{{$editComplain->ADUAN}}</textarea>
+                        <textarea name="complain_description" class="form-control">{{$editComplain->complain_description}}</textarea>
                     </div>
                 </div>
             {{--</form>--}}
@@ -102,7 +99,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 col-xs-12 control-label">Tindakan</label>
                     <div class="col-sm-6 col-xs-10">
-                        <textarea class="form-control" rows="3"></textarea>
+                        <textarea class="form-control" rows="3" name="action_comment"></textarea>
                     </div>
                     <label class="col-sm-1 col-xs-1 control-label">
                         <span class="pull-left symbol"> * </span>
@@ -111,7 +108,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 col-xs-12 control-label">Sebab Lewat</label>
                     <div class="col-sm-6 col-xs-10">
-                        <textarea class="form-control" rows="3"></textarea>
+                        <textarea class="form-control" rows="3" name="delay_reason"></textarea>
                     </div>
                 </div>
                 <div class="form-group">

@@ -28,33 +28,41 @@
             <table class="table table-hover">
 
                 <tr>
-                    <th>Bil.Aduan</th>
+                    <th>Bil. Aduan</th>
+                    <th>Tarikh Aduan</th>
                     <th>User Id</th>
                     <th>Aduan</th>
                     <th>Status</th>
-                    <th>Tindakan</th>
+                    <th>SUMBER</th>
                     <th>Id Daftar</th>
-                    <th width="10%"></th>
+                    <th>Kategori</th>
+                    <th>Tindakan</th>
+                    <th>Tarikh Tindakan</th>
+                    <th></th>
 
                 </tr>
                 @foreach($complain2 as $rekodcomplain)
                 <tr>
                     <tr>
-                        <td>{{ $rekodcomplain->ADUAN_ID }}
-                        <?php $id=$rekodcomplain->ADUAN_ID; ?>
+                        <td>{{ $rekodcomplain->complain_id }}
+                        <?php $id=$rekodcomplain->complain_id; ?>
                         </td>
-                        <td>{{ $rekodcomplain->EMP_ID_ADUAN }}</td>
-                        <td>{{ str_limit($rekodcomplain->ADUAN,40) }}</td>
+                        <td>{{ $rekodcomplain->created_at }}</td>
+                        <td>{{ $rekodcomplain->user_id }}</td>
+                        <td>{{ str_limit($rekodcomplain->complain_description,40) }}</td>
                         <td>
-                            @if ($rekodcomplain->KOD_STATUS == 1)
+                            @if ($rekodcomplain->complain_status_id == 1)
                                 <span class="label label-primary">Baru</span>
-                            @elseif ($rekodcomplain->KOD_STATUS == 2)
+                            @elseif ($rekodcomplain->complain_status_id == 2)
                                 <span class="label label-info">Tindakan</span>
-                            @elseif ($rekodcomplain->KOD_STATUS == 3)
+                            @elseif ($rekodcomplain->complain_status_id == 3)
                                 <span class="label label-success">Selesai</span>
                             @endif</td>
-                        <td>{{ str_limit($rekodcomplain->TINDAKAN,40) }}</td>
-                        <td>{{ $rekodcomplain->LOGIN_DAFTAR }}</td>
+                        <td>{{ $rekodcomplain->complain_source_id }}</td>
+                        <td>{{ $rekodcomplain->user_emp_id }}</td>
+                        <td>{{ $rekodcomplain->complain_category_id }}</td>
+                        <td>{{ str_limit($rekodcomplain->action_comment,40) }}</td>
+                        <td>{{ $rekodcomplain->action_date }}</td>
                         <td>
 
                             {{--<div class="btn-group btn-group-sm">
@@ -69,9 +77,11 @@
                                     <li><a href="#">Separated link</a></li>
                                 </ul>
                             </div>--}}
-                            {!! Form::open(array('route' => ['complain.destroy',$rekodcomplain->ADUAN_ID],'method'=>'delete','class'=>"form-horizontal")) !!}
+                            {!! Form::open(array('route' => ['complain.destroy',$rekodcomplain->complain_id],'method'=>'delete','class'=>"form-horizontal")) !!}
                                 <div class="btn-group btn-group-sm">
-                                <a href="{{route('complain.edit',$id)}}" class="glyphicon glyphicon-pencil btn-default" href="#" role="button"></a>
+                                    @if ($rekodcomplain->complain_status_id != 3)
+                                        <a href="{{route('complain.edit',$id)}}" class="glyphicon glyphicon-pencil btn-default" href="#" role="button"></a>
+                                    @endif
                                 <button type="submit" class="glyphicon glyphicon-remove btn-danger"></button>
                                 </div>
                             {!! Form::close() !!}

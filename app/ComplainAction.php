@@ -6,5 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ComplainAction extends Model
 {
-    //
+    public function complain()
+    {
+        return $this->hasMany('App\Complain');
+    }
 }
