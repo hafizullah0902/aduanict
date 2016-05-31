@@ -30,7 +30,7 @@
                 <tr>
                     <th>Bil. Aduan</th>
                     <th>Tarikh Aduan</th>
-                    <th>User Id</th>
+                    <th>Pengadu</th>
                     <th>Aduan</th>
                     <th>Status</th>
                     <th>SUMBER</th>
@@ -48,7 +48,12 @@
                         <?php $id=$rekodcomplain->complain_id; ?>
                         </td>
                         <td>{{ $rekodcomplain->created_at }}</td>
-                        <td>{{ $rekodcomplain->user_id }}</td>
+                        <td> @if($rekodcomplain->user)
+                                {{ $rekodcomplain->user_emp_id }} - {{$rekodcomplain->user->name }}
+                             @else
+                                {{ $rekodcomplain->user_emp_id }}
+                             @endif
+                                </td>
                         <td>{{ str_limit($rekodcomplain->complain_description,40) }}</td>
                         <td>
                             @if ($rekodcomplain->complain_status_id == 1)
@@ -59,28 +64,19 @@
                                 <span class="label label-success">Selesai</span>
                             @endif</td>
                         <td>{{ $rekodcomplain->complain_source_id }}</td>
-                        <td>{{ $rekodcomplain->user_emp_id }}</td>
+                        <td>{{ $rekodcomplain->user_id }}</td>
                         <td>{{ $rekodcomplain->complain_category_id }}</td>
                         <td>{{ str_limit($rekodcomplain->action_comment,40) }}</td>
                         <td>{{ $rekodcomplain->action_date }}</td>
                         <td>
 
-                            {{--<div class="btn-group btn-group-sm">
-                                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Action <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-right">
-                                    <li><a href="{{route('complain.edit',$id)}}">Kemaskini</a></li>
-                                    <li><a href="#">Another action</a></li>
-                                    <li><a href="#">Something else here</a></li>
-                                    <li role="separator" class="divider"></li>
-                                    <li><a href="#">Separated link</a></li>
-                                </ul>
-                            </div>--}}
                             {!! Form::open(array('route' => ['complain.destroy',$rekodcomplain->complain_id],'method'=>'delete','class'=>"form-horizontal")) !!}
                                 <div class="btn-group btn-group-sm">
-                                    @if ($rekodcomplain->complain_status_id != 3)
-                                        <a href="{{route('complain.edit',$id)}}" class="glyphicon glyphicon-pencil btn-default" href="#" role="button"></a>
+
+                                    @if (Entrust::can('action_complain'))
+                                        <a href="{{route('complain.action',$rekodcomplain->complain_id)}}" class="glyphicon glyphicon-plus btn-default" href="#" role="button"></a>
+                                    @else
+                                        <a href="{{route('complain.edit',$rekodcomplain->complain_id)}}" class="glyphicon glyphicon-pencil btn-default" href="#" role="button"></a>
                                     @endif
                                 <button type="submit" class="glyphicon glyphicon-remove btn-danger"></button>
                                 </div>

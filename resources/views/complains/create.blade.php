@@ -31,7 +31,7 @@
                     </div>
                     <label class="col-sm-2 control-label">No. Pekerja </label>
                     <div class="col-sm-2">
-                        <p class="form-control-static">{{Auth::user()->id}}</p>
+                        <p class="form-control-static">{{Auth::user()->emp_id}}</p>
                     </div>
                 </div>
                 <div class="form-group">
@@ -46,7 +46,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 col-xs-12 control-label">Kategori</label>
                     <div class="col-sm-3 col-xs-10">
-                        {!! Form::select('complain_category_id',$complain_categories,'',['class'=>'form-control chosen']); !!}
+                        {!! Form::select('complain_category_id',$complain_categories,'',['class'=>'form-control chosen','id'=>'complain_category_id'])!!}
                         {{--<select class="form-control input-sm" name="complain_category_id">--}}
                             {{--<option value="1">Zakat2u</option>--}}
                             {{--<option value="2">Call Center</option>--}}
@@ -56,30 +56,35 @@
                     <label class="col-sm-1 col-xs-2 control-label">
                         <span class="pull-left symbol"> * </span>
                     </label>
-
                 </div>
-                <div class="form-group">
+                <div class="form-group hide_byCategory">
+                    <label class="col-sm-2 col-xs-12 control-label">Cawangan</label>
+                    <div class="col-sm-3 col-xs-10">
+                        {!! Form::select('branch_id',$branch,'',['class'=>'form-control chosen','id'=>'branch_id'])!!}
+                    </div>
+                    <label class="col-sm-1 col-xs-2 control-label">
+                        <span class="pull-left symbol"> * </span>
+                    </label>
+                </div>
+                <div class="form-group hide_byCategory">
+                    <label class="col-sm-2 col-xs-12 control-label">Lokasi</label>
+                    <div class="col-sm-3 col-xs-10">
+                        {!! Form::select('lokasi_id',$asset_location,'',['class'=>'form-control chosen','id'=>'lokasi_id'])!!}
+                    </div>
+                    <label class="col-sm-1 col-xs-2 control-label">
+                        <span class="pull-left symbol"> * </span>
+                    </label>
+                </div>
+                <div class="form-group hide_byCategory">
                     <label class="col-sm-2 control-label">Aset</label>
                     <div class="col-sm-6">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search for...">
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Aset">
-                                    <span class="glyphicon glyphicon-search color" aria-hidden="true"></span>
-                                </button>
-                            </span>
-                        </div><!-- /input-group -->
+                        {!! Form::select('ict_no',$ict_no,'',['class'=>'form-control chosen','id'=>'ict_no']) !!}
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Kaedah</label>
                     <div class="col-sm-3">
-                        {!! Form::select('complain_source_id',$complain_sources,'',['class'=>'form-control chosen']); !!}
-                        {{--<select class="form-control input-sm" name="complain_source_id">--}}
-                            {{--<option value="1">Telefon</option>--}}
-                            {{--<option value="2">Email</option>--}}
-                            {{--<option value="3">Mesej</option>--}}
-                        {{--</select>--}}
+                        {!! Form::select('complain_source_id',$complain_sources,'',['class'=>'form-control chosen']) !!}
                     </div>
                 </div>
                 <div class="form-group {{ $errors->has('complain_description') ? 'has-error' : false }} ">
@@ -151,3 +156,100 @@
         </div>
 @endsection
 {{--end section modal --}}
+@section('script')
+    <script type="text/javascript">
+
+        $( document ).ready(function() {
+
+
+            $( "#complain_category_id" ).change(function() {
+                var complain_category_id = $(this).val();
+                show_hide_byCategory(complain_category_id);
+
+            });
+
+            $( "#branch_id" ).change(function() {
+                var branch_id = $(this).val();
+                get_location_byBranch(branch_id);
+
+            });
+
+            $( "#lokasi_id" ).change(function() {
+                var lokasi_id = $(this).val();
+                get_location_byBranch(lokasi_id);
+            });
+
+            function get_location_byBranch(branch_id)
+            {
+//                alert(branch_id);
+                $.ajax({
+                    type: "GET",
+                    url: base_url + '/complain/locations',
+                    dataType:"json",
+                    data:
+                    {
+                        branch_id : branch_id
+                    },
+                    beforeSend: function() {
+
+                    },
+                    success: function (location_data) {
+
+                        $("#lokasi_id").empty();
+
+                        $.each(location_data,function (key,value) {
+
+                            $("#lokasi_id").append("<option value' "+ key + " '>" + value + "</option>");
+                        });
+
+                        $("#lokasi_id").trigger("chosen:updated");
+
+                    }
+                });
+
+            }
+
+            function show_hide_byCategory(complain_category_id) {
+
+                if(complain_category_id=='5'||complain_category_id=='6')
+                {
+                    $('.hide_byCategory').hide();
+                }
+                else
+                {
+                    $('.hide_byCategory').show();
+                }
+            }
+
+            function get_asset_byLocation(lokasi_id)
+            {
+//                alert(lokasi_id);
+                $.ajax({
+                    type: "GET",
+                    url: base_url + '/complain/locations',
+                    dataType:"json",
+                    data:
+                    {
+                        lokasi_id : lokasi_id
+                    },
+                    beforeSend: function() {
+
+                    },
+                    success: function (asset_data) {
+
+                        $("#ict_no").empty();
+
+                        $.each(location_data,function (key,value) {
+
+                            $("#ict_no").append("<option value' "+ key + " '>" + value + "</option>");
+                        });
+
+                    }
+                });
+
+            }
+
+        });
+
+    </script>
+    @endsection

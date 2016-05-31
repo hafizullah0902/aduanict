@@ -24,7 +24,7 @@
     <![endif]-->
 </head>
 <body>
-<nav class="navbar navbar-inverse  navbar-fixed-top" >
+<nav class="navbar navbar-default  navbar-fixed-top" >
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -36,25 +36,25 @@
             </button>
             <a class="navbar-brand" href="#">
                 <span class="glyphicon glyphicon glyphicon-home" aria-hidden="true"></span>
-                Aduan ICT
+                Aduan ICT Administrator
             </a>
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
-
-                    @role('admin')
-                        <li>
-                            <a href="{{ route('admin.users.index') }}">Panel Admin</a>
-                        </li>
-                    @endrole
                     <li>
-                        <a href="#">Tambah Aduan</a>
+                        <a href="{{ route('complain.index') }}">Panel Aduan</a>
                     </li>
-                    <li class="active">
-                        <a href="#">
-                            Senarai Aduan
+                    <li>
+                        <a href="{{ route('admin.users.index') }}">Urus Pengguna</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.roles.index') }}">
+                            Urus Peranan
                         </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.permissions.index') }}">Urus Kebenaran</a>
                     </li>
                     <li class="dropdown">
                     @if (Auth::guest())
@@ -86,6 +86,9 @@
     </div><!-- /.container-fluid -->
 </nav>
 <div class="container">
+    @yield('content_filter')
+
+    @include('Admin.partials.notification')
    @yield('content')
 </div>
     @yield('modal')

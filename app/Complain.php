@@ -8,11 +8,18 @@ class Complain extends Model
 {
     protected $table = 'complains';
     protected $primaryKey = 'complain_id';
+    
+    
 //    public $timestamps = false;
 
     public function user()
     {
         return $this->belongsTo('App\User');
+    }
+
+    public function bagiPihak()
+    {
+        return $this->belongsTo('App\User','user_emp_id','emp_id');
     }
 
     public function complain_level()
@@ -22,12 +29,12 @@ class Complain extends Model
 
     public function complain_source()
     {
-        return $this->belongsTo('App\ComplainSource');
+        return $this->belongsTo('App\ComplainSource','complain_source_id','source_id');
     }
 
     public function complain_category()
     {
-        return $this->belongsTo('App\ComplainCategory','category_id','category_id');
+        return $this->belongsTo('App\ComplainCategory','complain_category_id','category_id');
     }
 
     public function action_user()
