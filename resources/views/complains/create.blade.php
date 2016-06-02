@@ -176,7 +176,7 @@
 
             $( "#lokasi_id" ).change(function() {
                 var lokasi_id = $(this).val();
-                get_location_byBranch(lokasi_id);
+//                get_location_byBranch(lokasi_id);
             });
 
             function get_location_byBranch(branch_id)

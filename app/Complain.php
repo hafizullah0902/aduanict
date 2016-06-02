@@ -14,7 +14,11 @@ class Complain extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\User','user_id','emp_id');
+    }
+    public function assets_location()
+    {
+        return $this->belongsTo('App\AssetsLocation','lokasi_id','location_id');
     }
 
     public function bagiPihak()
@@ -22,6 +26,16 @@ class Complain extends Model
         return $this->belongsTo('App\User','user_emp_id','emp_id');
     }
 
+    public function assets()
+    {
+        return $this->belongsTo('App\Assets','asset_id','asset_id');
+    }
+    
+    public function sph_kod_unit()
+    {
+        return $this->belongsTo('App\Sph_kod_lokasi','unit_id','kod');
+    }
+    
     public function complain_level()
     {
         return $this->belongsTo('App\ComplainLevel');
@@ -55,6 +69,11 @@ class Complain extends Model
     public function attachments()
     {
         return $this->morphMany('App\ComplainAttachment', 'attachable');
+    }
+    
+    public function complain_action()
+    {
+        return $this->hasMany('App\ComplainAction','complain_id','complain_id');
     }
 
 }

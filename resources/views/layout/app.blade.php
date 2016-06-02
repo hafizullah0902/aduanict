@@ -48,10 +48,15 @@
                             <a href="{{ route('admin.users.index') }}">Panel Admin</a>
                         </li>
                     @endrole
+                    @role('unit_manager')
+                    <li>
+                        <a href="{{ route('complain.assign') }}">Senarai Agihan</a>
+                    </li>
+                    @endrole
                     <li>
                         <a href="#">Tambah Aduan</a>
                     </li>
-                    <li class="active">
+                    <li>
                         <a href="#">
                             Senarai Aduan
                         </a>
@@ -86,6 +91,7 @@
     </div><!-- /.container-fluid -->
 </nav>
 <div class="container">
+    @include('flash::message')
    @yield('content')
 </div>
     @yield('modal')

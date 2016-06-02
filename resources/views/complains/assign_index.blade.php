@@ -3,7 +3,7 @@
 
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Senarai Aduan</h3>
+            <h3 class="panel-title">Senarai Agihan</h3>
         </div>
         <div class="panel-body">
             <div class="row">
@@ -78,18 +78,13 @@
                         <td>{{ $rekodcomplain->action_date }}</td>
                         <td>
 
-                            {!! Form::open(array('route' => ['complain.destroy',$rekodcomplain->complain_id],'method'=>'delete','class'=>"form-horizontal")) !!}
                                 <div class="btn-group btn-group-sm">
 
-                                    @if (Entrust::can('action_complain') )
-                                        <a href="{{route('complain.action',$rekodcomplain->complain_id)}}" ><span class="glyphicon glyphicon-wrench"></span></a>
-                                    @else
-                                        <a href="{{route('complain.edit',$rekodcomplain->complain_id)}}" class="glyphicon glyphicon-pencil" role="button"></a>
+                                    @if (Entrust::can('assign_complain') )
+                                        <a href="{{route('complain.assign_staff',$rekodcomplain->complain_id)}}" ><span class="glyphicon glyphicon-wrench"></span>Agih Tugas</a>
+
                                     @endif
 
-                                    @if (Entrust::can('delete_complain') and $rekodcomplain->complain_status_id == 1)
-                                        <button type="submit" class="glyphicon glyphicon-trash"></button>
-                                    @endif
                                 </div>
                             {!! Form::close() !!}
                         </td>

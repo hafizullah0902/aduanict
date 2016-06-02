@@ -23,12 +23,34 @@ class ComplainRequest extends Request
      */
     public function rules()
     {
+        $route_name = $this->route()->getName();
         switch($this->method()){
             case 'POST' : {
                 return ['complain_description'=>'required'];
             }
             case 'PUT' : {
-                return ['complain_description'=>'required'];
+//            dd($route_name);
+//
+                $validation_rules=array();
+
+                if($route_name=='complain.update')
+                {
+                    $validation_rules = array('complain_category_id'=> 'required',
+                        'lokasi_id' => 'required'
+                    );
+                }
+                else if($route_name=='complain.update_action')
+                {
+                    if(!$this->has('submit_type'))
+                    {
+                        $validation_rules = array('complain_status_id'=> 'required',
+                            'action_comment' => 'required'
+                        );
+
+                    }
+
+                }
+                return $validation_rules;
             }
             default:break;
         }
@@ -38,7 +60,8 @@ class ComplainRequest extends Request
     public function messages()
     {
         return [
-            'complain_description.required' => 'test!'
+            'complain_description.required' => 'Aduan perlu diisi!',
+            'lokasi_id.required' => 'Lokasi perlu diisi!',
         ];
     }
 }
