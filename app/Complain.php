@@ -25,7 +25,10 @@ class Complain extends Model
     {
         return $this->belongsTo('App\User','user_emp_id','emp_id');
     }
-
+    public function lokasi()
+    {
+        return $this->belongsTo('App\Sph_kod_lokasi','lokasi_id','kod');
+    }
     public function assets()
     {
         return $this->belongsTo('App\Assets','asset_id','asset_id');

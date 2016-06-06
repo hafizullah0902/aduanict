@@ -77,6 +77,9 @@ class ComplainController extends Controller
         return view('complains/index',compact('complain2'));
     }
 
+
+    /* FUNCTION UNTUK MANAGER AGIH STAFF
+    ==================================MULA========================================================================== */
     public function assign()
     {
 
@@ -89,17 +92,49 @@ class ComplainController extends Controller
     public function assign_staff($id)
     {
 
-        $complain=Complain::find($id);
+        $editComplain=Complain::find($id);
         
         $complain_actions=$this->get_complain_action($id);
         $unit_staff_list = User::where('kod_id',$this->unit_id)
+                                 ->where('emp_id','!=',$this->user_id)
+                                 ->lists('name','emp_id');
+
+        $unit_staff_list = array(''=>'Pilih Staf') + $unit_staff_list->all();
         
-        return view('complains/assign_index',compact('complain2'));
+        return view('complains/assign_staff',compact('editComplain','complain_actions','unit_staff_list'));
     }
+
+    public function update_assign_staff(Request $request,$id)
+    {
+
+        $editComplain=Complain::find($id);
+
+
+        $editComplain->assign_date=Carbon::now();
+        $editComplain->complain_status_id=2 ;
+        $editComplain->action_emp_id = $request->action_emp_id;
+
+        $editComplain->save();
+
+
+        $complain_action = new ComplainAction;
+        $complain_action->complain_id = $id;
+        $complain_action->action_by = $this->user_id;
+        $complain_action->delay_reason = $request->helpdesk_delay_reason;
+        $complain_action->complain_status_id=7;
+
+        $complain_action->save();
+
+        return view('complains/assign_staff',compact('editComplain','complain_actions','unit_staff_list'));
+    }
+
+    /*==================================END FUNCTION MANAGER========================================================================== */
+
     public function action($id)
     {
         
             $complain2 =Complain::find($id);
+
             $complain_categories = $this->get_complain_categories();
             $complain_status = $this->get_complain_status();
             $complain_actions = $this->get_complain_action($id);
@@ -113,11 +148,72 @@ class ComplainController extends Controller
             return view('complains/action',compact('editComplain','complain2','complain_categories','complain_status','complain_actions','branch','asset_location','unit_id','ict_no'));
     }
 
+    public function technical_action($id)
+    {
+
+        $complain2 =Complain::find($id);
+
+        $complain_statuses = ComplainStatus::where('status_id',2)
+                                            ->orwhere('status_id',3)
+                                            ->lists('description','status_id');
+        $complain_categories = $this->get_complain_categories();
+        $complain_status = $this->get_complain_status();
+        $complain_actions = $this->get_complain_action($id);
+        $editComplain=Complain::find($id);
+        $asset_location = $this->get_location();
+        $branch = $this->get_branch();
+        $unit_id = $this->get_kod_unit();
+        $ict_no = $this->get_assets();
 
 
+        return view('complains/technical_action',compact('editComplain','complain2','complain_categories','complain_status','complain_actions','branch','asset_location','unit_id','ict_no','complain_statuses'));
+    }
+
+    public function update_technical_action(ComplainRequest $request, $id)
+    {
 
 
+        $complain_status = $this->get_complain_status();
+        $complain_actions = $this->get_complain_action($id);
 
+        $complain = Complain::find($id);
+        $editComplain=Complain::find($id);
+        $complain_statuses = ComplainStatus::where('status_id',2)
+            ->orwhere('status_id',3)
+            ->lists('description','status_id');
+
+
+        $complain_status_id = $request->complain_status_id;
+        $action_comment = $request->action_comment;
+        $delay_reason = $request->delay_reason;
+
+        $complain->action_comment = $action_comment;
+        $complain->complain_status_id = $complain_status_id;
+        $complain->delay_reason = $delay_reason;
+
+
+        if ($request->complain_status_id == 3) {
+
+            $complain->action_date = Carbon::now();
+
+        }
+
+        $complain->save();
+
+        if ($request->complain_status_id == 3) {
+
+            $complain_action = new ComplainAction;
+            $complain_action->complain_id = $id;
+            $complain_action->complain_status_id = $complain_status_id;
+            $complain_action->action_by = $this->user_id;
+            $complain_action->action_comment = $action_comment;
+            $complain_action->delay_reason = $delay_reason;
+            $complain_action->save();
+
+
+        }
+        return view('complains/technical_action',compact('editComplain','complain2','complain_categories','complain_status','complain_actions','branch','asset_location','unit_id','ict_no','complain_statuses'));
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -198,12 +294,18 @@ class ComplainController extends Controller
             $complain->complain_category_id=$complain_category_id;
             $complain->lokasi_id=$lokasi_id;
 
-//       return $request->all();
+//     return $request->all();
             //save rekod
 
 
             $complain->save();
             // url selepas berjaya
+//        if($request->ajax())
+//        {
+//            return response() -> json(array('flag'=>'warning','message'=>'Berjaya dihantar','result'=>'success','redirct'=>url('complain')));
+//        }
+//        else
+            Flash::success('Aduan berjaya di hantar');
             return redirect(route('complain.index'));
 //   cara panjang     }
 
@@ -270,29 +372,28 @@ class ComplainController extends Controller
 
     public function update(ComplainRequest $request, $id)
     {
-//        $action_date = $request->action_date;
-        //        $complain_status_id = $request->complain_status_id;
-        
-        
-        $complain_description = $request->complain_description;
-        $lokasi_id = $request->lokasi_id;
-//        $unit_id = $request->unit_id;
-//        ict_no = $request -> ict_no;
-        $category_explode = explode('-',$request->complain_category_id );
-        $complain_category_id = $category_explode[0];
-        $unit_id = $category_explode[1];
-
-//        $action_comment = $request->action_comment;
-//        $delay_reason = $request->delay_reason;
-
 
         $complain=Complain::find($id);
+        
 
-        $complain->action_date=Carbon::now();
-        $complain->complain_description=$complain_description;
+        $lokasi_id = $request->lokasi_id;
+        $ict_no = $request->ict_no;
+        $complain_description = $request->complain_description;
+
+        if(!$request->has('hide_dropdown_category'))
+        {
+            $category_explode = explode('-',$request->complain_category_id );
+            $complain_category_id = $category_explode[0];
+            $unit_id = $category_explode[1];
+
+            $complain->action_date=Carbon::now();
+            $complain->complain_description=$complain_description;
+            $complain->complain_category_id=$complain_category_id;
+            $complain->unit_id=$unit_id;
+            
+        }
         $complain->lokasi_id=$lokasi_id;
-        $complain->unit_id=$unit_id;
-        $complain->complain_category_id=$complain_category_id;
+        $complain->ict_no=$ict_no;
 
         Flash::success('Aduan '.$id.' berjaya dikemaskini');
         $complain->save();
@@ -317,6 +418,7 @@ class ComplainController extends Controller
         {
             $complain_description = $request->complain_description;
             $complain_category_id = $request->complain_category_id;
+            $complain_status_id=$request->complain_status_id;
             $action_comment = $request->action_comment;
             $helpdesk_delay_reason = $request->helpdesk_delay_reason;
 
@@ -331,7 +433,7 @@ class ComplainController extends Controller
             {
                 $complain->assign_date = Carbon::now();
             }
-            $complain->complain_status_id=$request->complain_status_id;
+            $complain->complain_status_id=$complain_status_id;
         }
 
 
@@ -468,11 +570,13 @@ class ComplainController extends Controller
 
     function get_assets()
     {
-        $lokasi_id = \Request::input ('lokasi_id');
+        
+        $lokasi_id = $this->request->lokasi_id;
 
         if(!empty($lokasi_id))
         {
-            $ict_no = Asset::where('branch_id',$lokasi_id)->lists('butiran','id');
+            $ict_no = Asset::select('asset_id', DB::raw('CONCAT(asset_id, "-" , butiran) AS butiran_aset'))->lists('butiran_aset','asset_id')
+                            ->where('lokasi_id',$lokasi_id)->lists('butiran_aset','id');
         }
         else
         {

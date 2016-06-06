@@ -81,14 +81,19 @@
                             {!! Form::open(array('route' => ['complain.destroy',$rekodcomplain->complain_id],'method'=>'delete','class'=>"form-horizontal")) !!}
                                 <div class="btn-group btn-group-sm">
 
-                                    @if (Entrust::can('action_complain') )
+                                    @if (Entrust::can('action_complain'))
                                         <a href="{{route('complain.action',$rekodcomplain->complain_id)}}" ><span class="glyphicon glyphicon-wrench"></span></a>
-                                    @else
-                                        <a href="{{route('complain.edit',$rekodcomplain->complain_id)}}" class="glyphicon glyphicon-pencil" role="button"></a>
+                                    @elseif(Entrust::can('edit_complain') && $rekodcomplain->complain_status_id == 1 )
+                                        <a href="{{route('complain.edit',$rekodcomplain->complain_id)}}" class="glyphicon glyphicon-pencil" role="button">Kemasikini</a>
+                                    @elseif(Entrust::can('verify_complain') && $rekodcomplain->complain_status_id == 3)
+                                        <a href="{{route('complain.edit',$rekodcomplain->complain_id)}}" class="glyphicon glyphicon-pencil" role="button">Pengesahan</a>
+                                    @elseif(Entrust::can('technical_action'))
+                                        <a href="{{route('complain.technical_action',$rekodcomplain->complain_id)}}" class="glyphicon glyphicon-pencil" role="button">Tindakan</a>
+
                                     @endif
 
                                     @if (Entrust::can('delete_complain') and $rekodcomplain->complain_status_id == 1)
-                                        <button type="submit" class="glyphicon glyphicon-trash"></button>
+                                        <button type="button" class="glyphicon glyphicon-trash" data-destroy></button>
                                     @endif
                                 </div>
                             {!! Form::close() !!}

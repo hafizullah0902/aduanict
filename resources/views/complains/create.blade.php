@@ -69,7 +69,7 @@
                 <div class="form-group hide_byCategory">
                     <label class="col-sm-2 col-xs-12 control-label">Lokasi</label>
                     <div class="col-sm-3 col-xs-10">
-                        {!! Form::select('lokasi_id',$asset_location,'',['class'=>'form-control chosen','id'=>'lokasi_id'])!!}
+                        {!! Form::select('location_id',$asset_location,'',['class'=>'form-control chosen','id'=>'lokasi_id'])!!}
                     </div>
                     <label class="col-sm-1 col-xs-2 control-label">
                         <span class="pull-left symbol"> * </span>
@@ -176,7 +176,7 @@
 
             $( "#lokasi_id" ).change(function() {
                 var lokasi_id = $(this).val();
-//                get_location_byBranch(lokasi_id);
+                get_asset_byLocation(lokasi_id);
             });
 
             function get_location_byBranch(branch_id)
@@ -226,7 +226,7 @@
 //                alert(lokasi_id);
                 $.ajax({
                     type: "GET",
-                    url: base_url + '/complain/locations',
+                    url: base_url + '/complain/assets',
                     dataType:"json",
                     data:
                     {
@@ -239,10 +239,13 @@
 
                         $("#ict_no").empty();
 
-                        $.each(location_data,function (key,value) {
+                        $.each(asset_data,function (key,value) {
 
                             $("#ict_no").append("<option value' "+ key + " '>" + value + "</option>");
                         });
+
+                        $("#ict_no").trigger("chosen:updated");
+                        $("#ict_no").val('');
 
                     }
                 });

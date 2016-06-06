@@ -23,26 +23,35 @@
             </div>
             <label class="col-sm-2 control-label">No. Pekerja </label>
             <div class="col-sm-2">
-                <p class="form-control-static">{{$editComplain->user_id}}</p>
+                <p class="form-control-static">{{$editComplain->user->name}}</p>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-2 control-label">Bagi Pihak</label>
             <div class="col-sm-2">
-                <p class="form-control-static">{{$editComplain->user_emp_id}}</p>
+                <p class="form-control-static">{{$editComplain->bagiPihak->name}}</p>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-2 control-label">Kategori</label>
             <div class="col-sm-3">
-                <p class="form-control-static">{!! Form::select('complain_category_id',$complain_categories,$editComplain->complain_category_id.'-'.$editComplain->unit_id,['class'=>'form-control chosen']) !!} </p>
+                <p class="form-control-static">
+                    @if ($hide_dropdown_category !='Y')
+                        {!! Form::select('complain_category_id',$complain_categories,$editComplain->complain_category_id.'-'.$editComplain->unit_id,['class'=>'form-control chosen']) !!}
+
+                    @else
+                        {{ $editComplain->complain_category->description}}
+                        <input type="hidden" name="hide_dropdown_category" value="Y">
+                    @endif
+                </p>
             </div>
         </div>
         <div class="form-group hide_byCategory">
             <label class="col-sm-2 col-xs-12 control-label">Cawangan</label>
             <div class="col-sm-3 col-xs-10">
                 <p class="form-control-static">
-                    {{--{{ $editComplain->assets_location->branch->branch_description }}--}}
+
+                    {{ $editComplain->assets_location->branch->branch_description }}
                 </p>
             </div>
             <label class="col-sm-1 col-xs-2 control-label">
@@ -66,8 +75,12 @@
         </div>
         <div class="form-group">
             <label class="col-sm-2 control-label">Bahagian/Unit </label>
-            <div class="col-sm-6">
-                {!! Form::select('unit_id',$unit_id,$editComplain->unit_id,['class'=>'form-control chosen','id'=>'unit_id'])!!}
+            <div class="col-sm-6 form-control-static ">
+                @if ($hide_dropdown_category !='Y')
+                    {!! Form::select('unit_id',$unit_id,$editComplain->unit_id,['class'=>'form-control chosen','id'=>'unit_id'])!!}
+                @else
+                    {{ $editComplain->unit_id }}
+                @endif
             </div>
         </div>
         <div class="form-group {{ $errors->has('complain_description') ? 'has-error' : false }} ">

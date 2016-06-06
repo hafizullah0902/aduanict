@@ -1,6 +1,12 @@
-@if($editComplain->complain_status_id==4)
+
+
+@if($editComplain->complain_status_id==3)
+<div class=" alert alert-warning">
+    <strong>Menunggu Pengessahan dari Pengadu</strong>
+</div>
+@elseif($editComplain->complain_status_id==4)
     <div class=" alert alert-warning">
-        <strong>Menunggu Pengessahan dari Helpdesk</strong>
+        <strong>Menunggu Pengesahan dari Helpdesk</strong>
     </div>
 @elseif($editComplain->complain_status_id==5)
     <div class=" alert alert-warning">

@@ -4,7 +4,7 @@
     @include('layout/alert_message')
     @include('partials/complain_notification')
 
-    @if($editComplain->complain_status_id==1)
+    @if($editComplain->complain_status_id==2)
 
         {{--@include('complains.partials.edit_form')--}}
         {{--@include('complains.partials.actionhelpdesk_form')--}}
@@ -12,7 +12,7 @@
         <div class="container">
             <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation" class="active">
-                    <a href="#bayaran" aria-controls="bayaran" role="tab" data-toggle="tab"><strong>MAKLUMAT ADUAN</strong></a>
+                    <a href="#bayaran" aria-controls="bayaran" role="tab" data-toggle="tab"><strong>MAKLUMAT ADUAN - 2</strong></a>
                 </li>
                 <li role="presentation">
                     <a href="#bayaran2" aria-controls="bayaran2" role="tab" data-toggle="tab"><strong>TINDAKAN</strong></a>
@@ -22,10 +22,10 @@
 
         <div class="tab-content paddingcontent">
             <div role="tabpanel" class="tab-pane fade in active" id="bayaran">
-                @include('complains.partials.edit_form')
+                @include('complains.partials.edit_form',['hide_dropdown_category'=>'Y'])
             </div>
             <div role="tabpanel" class="tab-pane fade" id="bayaran2">
-                @include('complains.partials.actionhelpdesk_form')
+                @include('complains.partials.technical_action_form')
             </div>
         </div>
     @elseif($editComplain->complain_status_id==7)
@@ -43,7 +43,6 @@
         <div class="tab-content paddingcontent">
             <div role="tabpanel" class="tab-pane fade in active" id="bayaran">
                 @include('complains.partials.view_form')
-                @include('complains.partials.assign_form')
             </div>
             <div role="tabpanel" class="tab-pane fade" id="bayaran2">
                 <h3>Sejarah Tindakan</h3>
@@ -65,6 +64,7 @@
         <div class="tab-content paddingcontent">
             <div role="tabpanel" class="tab-pane fade in active" id="bayaran">
                 @include('complains.partials.view_form')
+                {{--@include('complains.partials.actionhelpdesk_form')--}}
             </div>
             <div role="tabpanel" class="tab-pane fade" id="bayaran2">
                 <h3>Sejarah Tindakan</h3>
@@ -78,8 +78,8 @@
     <script type="text/javascript">
         $( document).ready(function () {
 
-            $("#submit_agih").click(function () {
-                var submit_type='assign';
+            $("#submit_finish").click(function () {
+                var submit_type='tutup';
                 submit_form(submit_type);
 
             });

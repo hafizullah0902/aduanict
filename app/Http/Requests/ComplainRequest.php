@@ -35,9 +35,15 @@ class ComplainRequest extends Request
 
                 if($route_name=='complain.update')
                 {
-                    $validation_rules = array('complain_category_id'=> 'required',
-                        'lokasi_id' => 'required'
+                    $validation_rules = array(
+                        'complain_category_id'=> 'required',
+                        'lokasi_id' => 'required',
                     );
+
+                    if($this->hide_dropdown_category=='Y')
+                    {
+                        array_pull($validation_rules,'complain_category_id');
+                    }
                 }
                 else if($route_name=='complain.update_action')
                 {

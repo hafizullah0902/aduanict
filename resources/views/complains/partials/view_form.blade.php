@@ -23,13 +23,19 @@
             </div>
             <label class="col-sm-2 control-label">No. Pekerja </label>
             <div class="col-sm-2">
-                <p class="form-control-static">{{$editComplain->user_id}}</p>
+                <p class="form-control-static">{{$editComplain->user->name}}</p>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-2 control-label">Bagi Pihak</label>
             <div class="col-sm-2">
-                <p class="form-control-static">{{$editComplain->user_emp_id}}</p>
+                <p class="form-control-static">
+                    @if($editComplain->bagiPihak)
+                        {{$editComplain->bagiPihak->name}}
+                    @else
+                        {{$editComplain->user_emp_id}}
+                    @endif
+                </p>
             </div>
         </div>
         <div class="form-group">
@@ -53,7 +59,7 @@
             <label class="col-sm-2 col-xs-12 control-label">Lokasi</label>
             <div class="col-sm-3 col-xs-10">
                 <p class="form-control-static">
-                    {{$editComplain->lokasi_id}}
+                    {{$editComplain->lokasi->butiran}}
                 </p>
             </div>
         </div>

@@ -15,4 +15,9 @@ class ComplainAction extends Model
         return $this->belongsTo('App\Complain');
     }
 
+    public function user()
+    {
+//        return $this->belongTo('App\(Nama Model),(foreign Key),(Primary key) )
+        return $this->belongsTo('App\User','action_by','emp_id');
+    }
 }
