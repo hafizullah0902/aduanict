@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ComplainStatus extends Model
 {
-    public function complain()
-    {
-        return $this->hasMany('App\Complain');
-    }
+
+    protected $table = 'complain_statuses';
+    protected $primaryKey = 'status_id';
+    
 }

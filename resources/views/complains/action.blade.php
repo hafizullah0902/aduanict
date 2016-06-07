@@ -22,7 +22,7 @@
 
         <div class="tab-content paddingcontent">
             <div role="tabpanel" class="tab-pane fade in active" id="bayaran">
-                @include('complains.partials.edit_form')
+                @include('complains.partials.edit_form',['hide_dropdown_category'=>'N'])
             </div>
             <div role="tabpanel" class="tab-pane fade" id="bayaran2">
                 @include('complains.partials.actionhelpdesk_form')

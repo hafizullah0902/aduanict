@@ -36,7 +36,7 @@
             <label class="col-sm-2 control-label">Kategori</label>
             <div class="col-sm-3">
                 <p class="form-control-static">
-                    @if ($hide_dropdown_category !='Y')
+                    @if (!empty($hide_dropdown_category) && $hide_dropdown_category !='Y')
                         {!! Form::select('complain_category_id',$complain_categories,$editComplain->complain_category_id.'-'.$editComplain->unit_id,['class'=>'form-control chosen']) !!}
 
                     @else
@@ -76,7 +76,7 @@
         <div class="form-group">
             <label class="col-sm-2 control-label">Bahagian/Unit </label>
             <div class="col-sm-6 form-control-static ">
-                @if ($hide_dropdown_category !='Y')
+                @if (!empty($hide_dropdown_category) && $hide_dropdown_category !='Y')
                     {!! Form::select('unit_id',$unit_id,$editComplain->unit_id,['class'=>'form-control chosen','id'=>'unit_id'])!!}
                 @else
                     {{ $editComplain->unit_id }}

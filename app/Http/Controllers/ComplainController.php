@@ -9,6 +9,12 @@ use App\ComplainAction;
 use App\ComplainCategory;
 use App\ComplainSource;
 use App\ComplainStatus;
+use App\Events\ComplainAssignUser;
+use App\Events\ComplainCreated;
+use App\Events\ComplainHelpdeskAction;
+use App\Events\ComplainStaffAction;
+use App\Events\ComplainUserVerify;
+use Event;
 use App\KodUnit;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -25,7 +31,7 @@ use Entrust;
 
 class ComplainController extends Controller
 {
-//    code untuk trigger login or belum
+    //    code untuk trigger login or belum
     public function __construct(Request $request){
         $this->middleware('auth');
         $this->user_id = 0;
@@ -64,15 +70,9 @@ class ComplainController extends Controller
         }
         else
         {
-
             $complain2 =Complain::orderBy('created_at','DESC')->paginate(15);
         }
 
-//        show semua rekod
-
-
-//        untuk cek result betul ke x
-//        return $complain2;
 
         return view('complains/index',compact('complain2'));
     }
@@ -115,7 +115,8 @@ class ComplainController extends Controller
         $editComplain->action_emp_id = $request->action_emp_id;
 
         $editComplain->save();
-
+        Event::fire(new ComplainAssignUser($editComplain));
+        $complain_actions=$this->get_complain_action($id);
 
         $complain_action = new ComplainAction;
         $complain_action->complain_id = $id;
@@ -128,7 +129,7 @@ class ComplainController extends Controller
         return view('complains/assign_staff',compact('editComplain','complain_actions','unit_staff_list'));
     }
 
-    /*==================================END FUNCTION MANAGER========================================================================== */
+    /*==================================END FUNCTION MANAGER========================================================= */
 
     public function action($id)
     {
@@ -199,6 +200,7 @@ class ComplainController extends Controller
         }
 
         $complain->save();
+        Event::fire(new ComplainStaffAction($complain));
 
         if ($request->complain_status_id == 3) {
 
@@ -245,7 +247,7 @@ class ComplainController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-// cara panjang    public function store(Request $request)
+    // cara panjang    public function store(Request $request)
     public function store(ComplainRequest $request)
     {
        /**cek data dalam form
@@ -294,20 +296,13 @@ class ComplainController extends Controller
             $complain->complain_category_id=$complain_category_id;
             $complain->lokasi_id=$lokasi_id;
 
-//     return $request->all();
-            //save rekod
-
-
+//             return $request->all();
             $complain->save();
-            // url selepas berjaya
-//        if($request->ajax())
-//        {
-//            return response() -> json(array('flag'=>'warning','message'=>'Berjaya dihantar','result'=>'success','redirct'=>url('complain')));
-//        }
-//        else
+            Event::fire(new ComplainCreated($complain));
+
             Flash::success('Aduan berjaya di hantar');
             return redirect(route('complain.index'));
-//   cara panjang     }
+
 
 
     }
@@ -350,14 +345,6 @@ class ComplainController extends Controller
         $unit_id = $this->get_kod_unit();
         $ict_no = $this->get_assets();
 
-//        dd($complain_actions);
-//        $complain_status_id=1;
-//        $complain_description = $request->complain_description;
-//        $user_id = $request->user_emp_id;
-//        $complain_source_id = $request->complain_source_id;
-//        $complain_category_id = $request->complain_category_id;
-//        return $editComplain;
-
         return view('complains/edit',compact('editComplain','complain_categories','complain_status','complain_actions','branch','asset_location','unit_id','ict_no'));
         //return view('complains/edit',compact('editComplain'));
     }
@@ -398,14 +385,14 @@ class ComplainController extends Controller
         Flash::success('Aduan '.$id.' berjaya dikemaskini');
         $complain->save();
 
-//        return back();
+        // return back();
         return redirect(route('complain.index'));
     }
 
     public function update_action(ComplainRequest $request, $id)
     {
         // Kemaskini form Helpdesk
-//        $action_date = $request->action_date;
+        // $action_date = $request->action_date;
         $complain=Complain::find($id);
 
         if($request->submit_type=='tutup')
@@ -416,15 +403,15 @@ class ComplainController extends Controller
         }
         else
         {
-            $complain_description = $request->complain_description;
-            $complain_category_id = $request->complain_category_id;
+            //$complain_description = $request->complain_description;
+            //$complain_category_id = $request->complain_category_id;
             $complain_status_id=$request->complain_status_id;
             $action_comment = $request->action_comment;
             $helpdesk_delay_reason = $request->helpdesk_delay_reason;
 
             $complain->action_date=Carbon::now();
-//            $complain->complain_description=$complain_description;
-//            $complain->complain_category_id=$complain_category_id;
+            //$complain->complain_description=$complain_description;
+            //$complain->complain_category_id=$complain_category_id;
             $complain->action_comment=$action_comment;
             $complain->action_emp_id=$this->user_id;
             $complain->helpdesk_delay_reason=$helpdesk_delay_reason;
@@ -442,6 +429,7 @@ class ComplainController extends Controller
 
 
         $complain->save();
+        Event::fire(new ComplainHelpdeskAction($complain));
 
         // Insert dalam complain action
 
@@ -492,6 +480,7 @@ class ComplainController extends Controller
 
         }
         $complain->save();
+        Event::fire(new ComplainUserVerify($complain));
 
         // Insert dalam complain action
 
@@ -573,17 +562,23 @@ class ComplainController extends Controller
         
         $lokasi_id = $this->request->lokasi_id;
 
+
+
         if(!empty($lokasi_id))
         {
-            $ict_no = Asset::select('asset_id', DB::raw('CONCAT(asset_id, "-" , butiran) AS butiran_aset'))->lists('butiran_aset','asset_id')
-                            ->where('lokasi_id',$lokasi_id)->lists('butiran_aset','id');
-        }
-        else
-        {
-            $ict_no = Asset::select('asset_id', DB::raw('CONCAT(asset_id, "-" , butiran) AS butiran_aset'))->lists('butiran_aset','asset_id');
+
+            $ict_no = Asset::select('asset_id', DB::raw('CONCAT(asset_id, " - " , butiran) AS butiran_aset'))
+                            ->where('lokasi_id',$lokasi_id)->lists('butiran_aset','asset_id');
         }
 
-        $ict_no = array(''=>'Pilih Aset Berkenaan') + $ict_no->all();
+
+        else
+        {
+
+            $ict_no = array(''=>'Pilih Aset Berkenaan');
+        }
+
+
 
         return $ict_no;
     }

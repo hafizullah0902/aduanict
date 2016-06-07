@@ -69,7 +69,7 @@
                 <div class="form-group hide_byCategory">
                     <label class="col-sm-2 col-xs-12 control-label">Lokasi</label>
                     <div class="col-sm-3 col-xs-10">
-                        {!! Form::select('location_id',$asset_location,'',['class'=>'form-control chosen','id'=>'lokasi_id'])!!}
+                        {!! Form::select('location_id',$asset_location,'',['class'=>'form-control chosen','id'=>'lokasi_id']) !!}
                     </div>
                     <label class="col-sm-1 col-xs-2 control-label">
                         <span class="pull-left symbol"> * </span>
@@ -164,6 +164,7 @@
 
             $( "#complain_category_id" ).change(function() {
                 var complain_category_id = $(this).val();
+
                 show_hide_byCategory(complain_category_id);
 
             });
@@ -195,30 +196,20 @@
                     },
                     success: function (location_data) {
 
+                        console.log(location_data);
                         $("#lokasi_id").empty();
 
                         $.each(location_data,function (key,value) {
 
-                            $("#lokasi_id").append("<option value' "+ key + " '>" + value + "</option>");
+                            $("#lokasi_id").append("<option value='"+ key + "'>" + value + "</option>");
                         });
 
+                        $("#lokasi_id").val('');
                         $("#lokasi_id").trigger("chosen:updated");
 
                     }
                 });
 
-            }
-
-            function show_hide_byCategory(complain_category_id) {
-
-                if(complain_category_id=='5'||complain_category_id=='6')
-                {
-                    $('.hide_byCategory').hide();
-                }
-                else
-                {
-                    $('.hide_byCategory').show();
-                }
             }
 
             function get_asset_byLocation(lokasi_id)
@@ -241,15 +232,32 @@
 
                         $.each(asset_data,function (key,value) {
 
-                            $("#ict_no").append("<option value' "+ key + " '>" + value + "</option>");
+                            $("#ict_no").append("<option value='"+ key + "'>" + value + "</option>");
                         });
 
-                        $("#ict_no").trigger("chosen:updated");
                         $("#ict_no").val('');
+                        $("#ict_no").trigger("chosen:updated");
+
 
                     }
                 });
 
+            }
+
+            function show_hide_byCategory(complain_category_id) {
+
+                var esp_complain_category_id = complain_category_id.split('-');
+
+                complain_category_id= esp_complain_category_id[0];
+
+                if(complain_category_id=='5'||complain_category_id=='6')
+                {
+                    $('.hide_byCategory').hide();
+                }
+                else
+                {
+                    $('.hide_byCategory').show();
+                }
             }
 
         });

@@ -20,6 +20,10 @@ class Complain extends Model
     {
         return $this->belongsTo('App\AssetsLocation','lokasi_id','location_id');
     }
+    public function unit_no()
+    {
+        return $this->belongsTo('App\KodUnit','unit_id','kod_id');
+    }
 
     public function bagiPihak()
     {
@@ -56,15 +60,15 @@ class Complain extends Model
 
     public function action_user()
     {
-        return $this->belongsTo('App\User');
-    }
-
-    public function verify_user()
-    {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\User','action_emp_id','emp_id');
     }
 
     public function complain_status()
+    {
+        return $this->belongsTo('App\ComplainStatus','complain_status_id','status_id');
+    }
+
+    public function verify_user()
     {
         return $this->belongsTo('App\User');
     }
