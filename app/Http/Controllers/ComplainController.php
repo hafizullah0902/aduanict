@@ -6,6 +6,7 @@ use App\Asset;
 use App\AssetsLocation;
 use App\Branch;
 use App\ComplainAction;
+use App\ComplainAttachment;
 use App\ComplainCategory;
 use App\ComplainSource;
 use App\ComplainStatus;
@@ -43,6 +44,7 @@ class ComplainController extends Controller
             $this->unit_id=Auth::user()->kod_id;
         }
         $this-> request =$request;
+        $this-> exclude_array =[5,6];
     }
 
     /**
@@ -135,18 +137,28 @@ class ComplainController extends Controller
     {
         
             $complain2 =Complain::find($id);
-
             $complain_categories = $this->get_complain_categories();
+
             $complain_status = $this->get_complain_status();
             $complain_actions = $this->get_complain_action($id);
             $editComplain=Complain::find($id);
-            $asset_location = $this->get_location();
-            $branch = $this->get_branch();
+
             $unit_id = $this->get_kod_unit();
-            $ict_no = $this->get_assets();
+
+            $get_branch_location_asset = $this-> prepare_branch_location_assets($editComplain,'action');
+            $branch = $get_branch_location_asset['branch'];
+            $hide_branch_location_asset = $get_branch_location_asset['hide_branch_location_asset'];
+            $asset_location = $get_branch_location_asset['asset_location'];
+            $ict_no = $get_branch_location_asset['ict_no'];
+
+            /*$complain_lokasi_id = $editComplain->lokasi_id;
+            $asset_filter = ['lokasi_id'=>$complain_lokasi_id];
+            $location_filter = array('branch_id'=>$complain_branchId);
+            $asset_location = $this->get_location($location_filter);
+            $ict_no = $this->get_assets($asset_filter);*/
 
 
-            return view('complains/action',compact('editComplain','complain2','complain_categories','complain_status','complain_actions','branch','asset_location','unit_id','ict_no'));
+            return view('complains/action',compact('editComplain','complain2','complain_categories','complain_status','complain_actions','branch','asset_location','unit_id','ict_no','hide_branch_location_asset'));
     }
 
     public function technical_action($id)
@@ -161,13 +173,17 @@ class ComplainController extends Controller
         $complain_status = $this->get_complain_status();
         $complain_actions = $this->get_complain_action($id);
         $editComplain=Complain::find($id);
-        $asset_location = $this->get_location();
-        $branch = $this->get_branch();
+
         $unit_id = $this->get_kod_unit();
-        $ict_no = $this->get_assets();
+
+        $get_branch_location_asset = $this-> prepare_branch_location_assets($editComplain);
+        $branch = $get_branch_location_asset['branch'];
+        $hide_branch_location_asset = $get_branch_location_asset['hide_branch_location_asset'];
+        $asset_location = $get_branch_location_asset['asset_location'];
+        $ict_no = $get_branch_location_asset['ict_no'];
 
 
-        return view('complains/technical_action',compact('editComplain','complain2','complain_categories','complain_status','complain_actions','branch','asset_location','unit_id','ict_no','complain_statuses'));
+        return view('complains/technical_action',compact('editComplain','complain2','complain_categories','complain_status','complain_actions','branch','asset_location','unit_id','ict_no','complain_statuses','hide_branch_location_asset'));
     }
 
     public function update_technical_action(ComplainRequest $request, $id)
@@ -275,17 +291,26 @@ class ComplainController extends Controller
             $user_emp_id = $request->user_emp_id;
             $complain_source_id = $request->complain_source_id;
             $lokasi_id = $request->lokasi_id;
+            $branch_id = $request->branch_id;
+            $ict_no = $request->ict_no;
             $category_explode = explode('-',$request->complain_category_id );
             $complain_category_id = $category_explode[0];
             $unit_id = $category_explode[1];
-
 
             if(empty($user_emp_id))
             {
                 $user_emp_id = Auth::user()->emp_id;
             }
 
-            //initilize object
+            $aduan_category_exception_value = array('5','6');
+
+            if(in_array($complain_category_id,$aduan_category_exception_value ))
+            {
+
+                $lokasi_id = null;
+                $ict_no = null;
+            }
+
             $complain = new Complain;
             $complain->user_id = $user_id;
             $complain->complain_description = $complain_description;
@@ -295,9 +320,27 @@ class ComplainController extends Controller
             $complain->unit_id=$unit_id;
             $complain->complain_category_id=$complain_category_id;
             $complain->lokasi_id=$lokasi_id;
+            $complain->branch_id=$branch_id;
+            $complain->ict_no=$ict_no;
 
 //             return $request->all();
             $complain->save();
+
+            if($request->hasFile('complain_attachment') && $request->file('complain_attachment')->isValid())
+            {
+                $fileName = $complain->complain_id.'-'.$request->file('complain_attachment')->getClientOriginalName();
+
+//                dd($fileName);
+                $destination_path = base_path().'/public/uploads/';
+                $request->file('complain_attachment')->move($destination_path,$fileName);
+
+                $complain_attachment = new ComplainAttachment();
+
+                $complain_attachment->attachment_filename = $fileName;
+                $complain->attachments()->save($complain_attachment);
+
+            }
+
             Event::fire(new ComplainCreated($complain));
 
             Flash::success('Aduan berjaya di hantar');
@@ -337,15 +380,19 @@ class ComplainController extends Controller
         $complain_categories = $this->get_complain_categories();
         $complain_status = $this->get_complain_status();
         $complain_actions = $this->get_complain_action($id);
-        $complain_branchId = $editComplain->assets_location->branch_id;
-        $location_filter = array('branch_id'=>$complain_branchId);
-
-        $asset_location = $this->get_location($location_filter);
-        $branch = $this->get_branch();
         $unit_id = $this->get_kod_unit();
-        $ict_no = $this->get_assets();
 
-        return view('complains/edit',compact('editComplain','complain_categories','complain_status','complain_actions','branch','asset_location','unit_id','ict_no'));
+//        $asset_location = $this->get_location($location_filter);
+//        $ict_no = $this->get_assets($asset_filter);
+//        $branch = $this->get_branch();
+       $get_branch_location_asset = $this-> prepare_branch_location_assets($editComplain);
+        $branch = $get_branch_location_asset['branch'];
+        $hide_branch_location_asset = $get_branch_location_asset['hide_branch_location_asset'];
+        $asset_location = $get_branch_location_asset['asset_location'];
+        $ict_no = $get_branch_location_asset['ict_no'];
+
+
+        return view('complains/edit',compact('editComplain','complain_categories','complain_status','complain_actions','branch','asset_location','unit_id','ict_no','hide_branch_location_asset'));
         //return view('complains/edit',compact('editComplain'));
     }
 
@@ -372,18 +419,26 @@ class ComplainController extends Controller
             $category_explode = explode('-',$request->complain_category_id );
             $complain_category_id = $category_explode[0];
             $unit_id = $category_explode[1];
+            $branch_id = $request->branch_id;
 
             $complain->action_date=Carbon::now();
-            $complain->complain_description=$complain_description;
+//            $complain->complain_description=$complain_description;
             $complain->complain_category_id=$complain_category_id;
             $complain->unit_id=$unit_id;
             
         }
-        $complain->lokasi_id=$lokasi_id;
-        $complain->ict_no=$ict_no;
+        if(!in_array($complain->complain_cotegory_id,$this->exclude_array ))
+        {
+            $complain->lokasi_id=$lokasi_id;
+            $complain->ict_no=$ict_no;
+            $complain->branch_id=$branch_id;
+        }
+
 
         Flash::success('Aduan '.$id.' berjaya dikemaskini');
         $complain->save();
+
+
 
         // return back();
         return redirect(route('complain.index'));
@@ -432,24 +487,26 @@ class ComplainController extends Controller
         Event::fire(new ComplainHelpdeskAction($complain));
 
         // Insert dalam complain action
-
-        $complain_action = new ComplainAction;
-        $complain_action->complain_id = $id;
-        $complain_action->action_by = $this->user_id;
-        $complain_action->delay_reason = $request->helpdesk_delay_reason;
-        $complain_action->complain_status_id=$request->complain_status_id;
-
-        if($request->submit_type=='tutup')
+        if($complain_status_id>1)
         {
-            $complain_action->action_comment ='Tutup';
+            $complain_action = new ComplainAction;
+            $complain_action->complain_id = $id;
+            $complain_action->action_by = $this->user_id;
+            $complain_action->delay_reason = $request->helpdesk_delay_reason;
+            $complain_action->complain_status_id=$request->complain_status_id;
 
-        }
-        else
-        {
-            $complain_action->action_comment = $request->action_comment;
+            if($request->submit_type=='tutup')
+            {
+                $complain_action->action_comment ='Tutup';
+            }
+            else
+            {
+                $complain_action->action_comment = $request->action_comment;
+            }
+
+            $complain_action->save();
         }
 
-          $complain_action->save();
 
 
 
@@ -542,6 +599,11 @@ class ComplainController extends Controller
             $branch_id = $this->request->input ('branch_id');
         }
 
+        if(empty($branch_id))
+        {
+            $validation_branch_id = $this->request->old('branch_id');
+            $branch_id = $validation_branch_id;
+        }
 
         if(!empty($branch_id))
         {
@@ -557,21 +619,31 @@ class ComplainController extends Controller
         return $asset_location;
     }
 
-    function get_assets()
+    function get_assets($filter=array())
     {
         
         $lokasi_id = $this->request->lokasi_id;
 
+        if(isset($filter['lokasi_id']) && !empty($filter['lokasi_id']))
+        {
+            $lokasi_id = $filter['lokasi_id'];
+        }
 
+        if(empty($lokasi_id))
+        {
+            $validation_lokasi_id = $this->request->old('lokasi_id');
+            $lokasi_id = $validation_lokasi_id;
+        }
 
         if(!empty($lokasi_id))
         {
 
             $ict_no = Asset::select('asset_id', DB::raw('CONCAT(asset_id, " - " , butiran) AS butiran_aset'))
                             ->where('lokasi_id',$lokasi_id)->lists('butiran_aset','asset_id');
+
+            $ict_no = array(''=>'Pilih Aset Berkenaan') + $ict_no->all();
         }
-
-
+        
         else
         {
 
@@ -597,5 +669,38 @@ class ComplainController extends Controller
         return $complain_actions;
     }
 
+    function prepare_branch_location_assets($editComplain,$method='edit')
+    {
+
+        if(!in_array($editComplain->complain_category_id,$this->exclude_array ))
+        {
+            $complain_branchId = $editComplain->assets_location->branch_id;
+            $location_filter = array('branch_id'=>$complain_branchId);
+            $complain_lokasi_id = $editComplain->lokasi_id;
+            $asset_filter = ['lokasi_id'=>$complain_lokasi_id];
+            $asset_location = $this->get_location($location_filter);
+            $ict_no = $this->get_assets($asset_filter);
+            $branch = $this->get_branch();
+            $hide_branch_location_asset = 'N';
+        }
+        else
+        {
+            if($method=='action')
+            {
+                $branch = $this->get_branch();
+                $ict_no = $this->get_assets();
+                $asset_location = $this->get_location();
+                $hide_branch_location_asset = 'N';
+            }else
+            {
+                $asset_location = [];
+                $ict_no = [];
+                $branch = [];
+                $hide_branch_location_asset = 'Y';
+            }
+
+        }
+        return ['branch'=>$branch,'asset_location'=>$asset_location,'ict_no'=>$ict_no,'hide_branch_location_asset'=>$hide_branch_location_asset];
+    }
     
 }

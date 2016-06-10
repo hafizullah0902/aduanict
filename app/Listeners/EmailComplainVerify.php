@@ -66,7 +66,7 @@ class EmailComplainVerify
 
         if($complain_status_id==4)
         {
-            Mail::send('complains.email.complain_user_verify_yes', $data,function ($message) use ($data,$complain_email,$complain_name,$helpdesk_email)
+            Mail::queue('complains.email.complain_user_verify_yes', $data,function ($message) use ($data,$complain_email,$complain_name,$helpdesk_email)
             {
 
                 $message->from($complain_email, $complain_name);
@@ -75,7 +75,7 @@ class EmailComplainVerify
         }
         elseif($complain_status_id==2)
         {
-            Mail::send('complains.email.complain_user_verify_no', $data,function ($message) use ($data,$complain_email,$complain_name,$action_id)
+            Mail::queue('complains.email.complain_user_verify_no', $data,function ($message) use ($data,$complain_email,$complain_name,$action_id)
             {
 
                 $message->from($complain_email, $complain_name);

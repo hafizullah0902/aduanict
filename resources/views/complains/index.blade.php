@@ -7,7 +7,7 @@
         </div>
         <div class="panel-body">
             <div class="row">
-                <div class="col-sm-10 col-xs-2">
+                <div class="col-sm-10">
                     <a href="{{route('complain.create')}}" class="btn btn-warning">Tambah Aduan</a>
 
                     <a href="#" class="dropdown-toggle btn btn-default" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -24,8 +24,8 @@
                 </div>
             </div>
             <hr>
-            <div class="table-responsive">
-            <table class="table table-hover">
+            <div class="table col-sm-12">
+            <table class="table-responsive table-hover">
 
                 <tr>
                     <th>Bil. Aduan</th>
@@ -81,19 +81,42 @@
                             {!! Form::open(array('route' => ['complain.destroy',$rekodcomplain->complain_id],'method'=>'delete','class'=>"form-horizontal")) !!}
                                 <div class="btn-group btn-group-sm">
 
-                                    @if (Entrust::can('action_complain'))
-                                        <a href="{{route('complain.action',$rekodcomplain->complain_id)}}" ><span class="glyphicon glyphicon-wrench"></span></a>
-                                    @elseif(Entrust::can('edit_complain') && $rekodcomplain->complain_status_id == 1 )
-                                        <a href="{{route('complain.edit',$rekodcomplain->complain_id)}}" class="glyphicon glyphicon-pencil" role="button">Kemasikini</a>
-                                    @elseif(Entrust::can('verify_complain') && $rekodcomplain->complain_status_id == 3)
-                                        <a href="{{route('complain.edit',$rekodcomplain->complain_id)}}" class="glyphicon glyphicon-pencil" role="button">Pengesahan</a>
-                                    @elseif(Entrust::can('technical_action'))
-                                        <a href="{{route('complain.technical_action',$rekodcomplain->complain_id)}}" class="glyphicon glyphicon-pencil" role="button">Tindakan</a>
+                                    @if($rekodcomplain->complain_status_id == 1)
+                                        @if(Entrust::can('action_complain')&& Entrust::hasRole('ict_helpdesk'))
+                                            <a href="{{route('complain.action',$rekodcomplain->complain_id)}}" class="btn btn-warning">
+                                                <span class="glyphicon glyphicon-wrench"></span> Kemaskini</a>
+                                        @elseif (Entrust::can('edit_complain'))
+                                            <a href="{{route('complain.edit',$rekodcomplain->complain_id)}}" class="btn btn-primary">
+                                                <span class="glyphicon glyphicon-edit"></span> Kemaskini</a>
+                                        @elseif (Entrust::can('delete_complain'))
+                                            <button type="button" class="glyphicon glyphicon-trash" data-destroy></button>
+                                        @else
+                                            <a href="" class="glyphicon glyphicon-pencil" role="button">Tegok Sajo</a>
+                                        @endif
+                                    @elseif($rekodcomplain->complain_status_id == 2)
+                                        @if(Entrust::can('technical_action'))
+                                            <a href="{{route('complain.technical_action',$rekodcomplain->complain_id)}}" class="glyphicon glyphicon-pencil" role="button">Tindakan</a>
+                                        @else
+                                            <a href="" class="glyphicon glyphicon-pencil" role="button">Tegok Sajo</a>
+                                        @endif
+                                    @elseif($rekodcomplain->complain_status_id == 3 &&)
+                                        @if(Entrust::can('verify_complain'))
+                                            <a href="{{route('complain.edit',$rekodcomplain->complain_id)}}" class="glyphicon glyphicon-pencil" role="button">Pengesahan(P)</a>
+                                        @else
+                                            <a href="" class="glyphicon glyphicon-pencil" role="button">Tegok Sajo</a>
+                                        @endif
 
-                                    @endif
+                                    @elseif($rekodcomplain->complain_status_id == 4)
+                                        @if(Entrust::can('action_complain')&& Entrust::hasRole('ict_helpdesk'))
+                                            <a href="{{route('complain.action',$rekodcomplain->complain_id)}}" ><span class="glyphicon glyphicon-wrench">Pengesahan (H)</span></a>
+                                        @else
+                                            <a href="" class="glyphicon glyphicon-pencil" role="button">Tegok Sajo</a>
+                                        @endif
+                                    @elseif($rekodcomplain->complain_status_id == 6)
 
-                                    @if (Entrust::can('delete_complain') and $rekodcomplain->complain_status_id == 1)
-                                        <button type="button" class="glyphicon glyphicon-trash" data-destroy></button>
+                                    @else
+                                            <a href="" class="glyphicon glyphicon-pencil" role="button">Tegok Sajo</a>
+
                                     @endif
                                 </div>
                             {!! Form::close() !!}

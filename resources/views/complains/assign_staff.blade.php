@@ -79,8 +79,22 @@
         $( document).ready(function () {
 
             $("#submit_agih").click(function () {
-                var submit_type='assign';
-                submit_form(submit_type);
+
+                swal({   title: "Anda Pasti",
+                    text: "Makluman",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Ya,saya Pasti",
+                    closeOnConfirm: false
+                },
+                        function() {
+                            var submit_type = 'assign';
+                            submit_form(submit_type);
+
+                             });
+
+
 
             });
 

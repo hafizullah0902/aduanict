@@ -52,8 +52,10 @@ Route::get('complain/locations','ComplainController@get_location')->name('compla
 Route::resource('complain','ComplainController');
 
 Route::auth();
-
 Route::get('/home', 'HomeController@index');
+
+Route::get('reports/monthly_statistic_aduan','ReportController@monthly_statistic_aduan')->name('reports.monthly_statistic_aduan');
+Route::get('reports/monthly_statistic_table_aduan','ReportController@monthly_statistic_table_aduan')->name('reports.monthly_statistic_table_aduan');
 
 /** ------------------------------------------
  *  Admin Routes

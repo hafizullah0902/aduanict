@@ -10,7 +10,7 @@
         <div class="panel-body">
 
             {{--<form class="form-horizontal">--}}
-            {!! Form::open(array('route' => 'complain.store', 'class'=>"form-horizontal")) !!} {{-- Untuk tujuan security (form + security token) --}}
+            {!! Form::open(array('route' => 'complain.store', 'class'=>"form-horizontal", 'files'=>true)) !!} {{-- Untuk tujuan security (form + security token) --}}
 
                 <div class="form-group">
                     <label class="col-sm-2 col-xs-2 control-label">Tarikh </label>
@@ -21,7 +21,8 @@
                 <div class="form-group">
                    <label class="col-sm-2 col-xs-2 control-label">Masa </label>
                     <div class="col-sm-2 col-xs-10">
-                        <p class="form-control-static">{{date('H:i:s')}}</p>
+                        <div id="clock"></div>
+                        <input type="hidden" id="servertime" value="{{time()}}">
                     </div>
                 </div>
                 <div class="form-group">
@@ -36,10 +37,16 @@
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Bagi Pihak</label>
-                    <div class="col-sm-6">
+                    <div class="col-sm-1">
+                        <div class="checkbox">
+                            <label>
+                                {{ Form::checkbox('bagi_pihak', 'Y',false,['id'=>"bagi_pihak"]) }} Ya
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 hide_div" id="hide_bagiPihak">
                         <div class="input-group">
-
-                            {!! Form::select('user_emp_id',$users,'',['class'=>'form-control chosen']); !!}
+                            {!! Form::select('user_emp_id',$users,'user_emp_id',['class'=> 'form-control','id'=>'user_emp_id'])!!}
                         </div><!-- /input-group -->
                     </div>
                 </div>
@@ -69,13 +76,13 @@
                 <div class="form-group hide_byCategory">
                     <label class="col-sm-2 col-xs-12 control-label">Lokasi</label>
                     <div class="col-sm-3 col-xs-10">
-                        {!! Form::select('location_id',$asset_location,'',['class'=>'form-control chosen','id'=>'lokasi_id']) !!}
+                        {!! Form::select('lokasi_id',$asset_location,'',['class'=>'form-control chosen','id'=>'lokasi_id']) !!}
                     </div>
                     <label class="col-sm-1 col-xs-2 control-label">
                         <span class="pull-left symbol"> * </span>
                     </label>
                 </div>
-                <div class="form-group hide_byCategory">
+                <div class="form-group hide_byCategory {{ $errors->has('complain_description') ? 'has-error' : false }}">
                     <label class="col-sm-2 control-label">Aset</label>
                     <div class="col-sm-6">
                         {!! Form::select('ict_no',$ict_no,'',['class'=>'form-control chosen','id'=>'ict_no']) !!}
@@ -84,7 +91,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Kaedah</label>
                     <div class="col-sm-3">
-                        {!! Form::select('complain_source_id',$complain_sources,'',['class'=>'form-control chosen']) !!}
+                        {!! Form::select('complain_source_id',$complain_sources,'',['class'=>'form-control chosen','id'=>'complain_source_id']) !!}
                     </div>
                 </div>
                 <div class="form-group {{ $errors->has('complain_description') ? 'has-error' : false }} ">
@@ -93,6 +100,14 @@
                         <textarea name="complain_description" class="form-control" rows="3">{{old('complain_description')}}</textarea>
                     </div>
                 </div>
+                <div class="form-group {{ $errors->has('complain_attachment') ? 'has-error' : false }}">
+                    <label class="col-sm-2 control-label">Muatnaik Gambar/<br>fail</label>
+                    <div class="col-sm-6">
+                        {!! Form::file('complain_attachment',['class'=>'form-control']) !!}
+                    </div>
+                </div>
+
+
                 <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <button type="submit" class="btn btn-success">Hantar</button>
@@ -109,158 +124,9 @@
 @endsection
 {{--end section content --}}
 @section('modal')
-        <!-- Large modal -->
-        <div id="bagiPihak" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="gridSystemModalLabel">Bagi Pihak</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="list-group">
-                            <a href="#" class="list-group-item active">
-                                Firdaus
-                            </a>
-                            <a href="#" class="list-group-item">Syahril</a>
-                            <a href="#" class="list-group-item">Ruzaini</a>
-                            <a href="#" class="list-group-item">Rahmat</a>
-                            <a href="#" class="list-group-item">Mohammad</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Large modal -->
-        <div id="Aset" class="modal fade bs-example-modal-lg" tabindex="-2" role="dialog" aria-labelledby="myLargeModalLabel2">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="gridSystemModalLabel2">Senarai Aset</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="list-group">
-                            <a href="#" class="list-group-item active">
-                                Komputer Kaunter
-                            </a>
-                            <a href="#" class="list-group-item">Komputer 1</a>
-                            <a href="#" class="list-group-item">Komputer 2</a>
-                            <a href="#" class="list-group-item">Komputer 3</a>
-                            <a href="#" class="list-group-item">Printer</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 @endsection
 {{--end section modal --}}
 @section('script')
-    <script type="text/javascript">
-
-        $( document ).ready(function() {
-
-
-            $( "#complain_category_id" ).change(function() {
-                var complain_category_id = $(this).val();
-
-                show_hide_byCategory(complain_category_id);
-
-            });
-
-            $( "#branch_id" ).change(function() {
-                var branch_id = $(this).val();
-                get_location_byBranch(branch_id);
-
-            });
-
-            $( "#lokasi_id" ).change(function() {
-                var lokasi_id = $(this).val();
-                get_asset_byLocation(lokasi_id);
-            });
-
-            function get_location_byBranch(branch_id)
-            {
-//                alert(branch_id);
-                $.ajax({
-                    type: "GET",
-                    url: base_url + '/complain/locations',
-                    dataType:"json",
-                    data:
-                    {
-                        branch_id : branch_id
-                    },
-                    beforeSend: function() {
-
-                    },
-                    success: function (location_data) {
-
-                        console.log(location_data);
-                        $("#lokasi_id").empty();
-
-                        $.each(location_data,function (key,value) {
-
-                            $("#lokasi_id").append("<option value='"+ key + "'>" + value + "</option>");
-                        });
-
-                        $("#lokasi_id").val('');
-                        $("#lokasi_id").trigger("chosen:updated");
-
-                    }
-                });
-
-            }
-
-            function get_asset_byLocation(lokasi_id)
-            {
-//                alert(lokasi_id);
-                $.ajax({
-                    type: "GET",
-                    url: base_url + '/complain/assets',
-                    dataType:"json",
-                    data:
-                    {
-                        lokasi_id : lokasi_id
-                    },
-                    beforeSend: function() {
-
-                    },
-                    success: function (asset_data) {
-
-                        $("#ict_no").empty();
-
-                        $.each(asset_data,function (key,value) {
-
-                            $("#ict_no").append("<option value='"+ key + "'>" + value + "</option>");
-                        });
-
-                        $("#ict_no").val('');
-                        $("#ict_no").trigger("chosen:updated");
-
-
-                    }
-                });
-
-            }
-
-            function show_hide_byCategory(complain_category_id) {
-
-                var esp_complain_category_id = complain_category_id.split('-');
-
-                complain_category_id= esp_complain_category_id[0];
-
-                if(complain_category_id=='5'||complain_category_id=='6')
-                {
-                    $('.hide_byCategory').hide();
-                }
-                else
-                {
-                    $('.hide_byCategory').show();
-                }
-            }
-
-        });
-
-    </script>
+    @include('complains.partials.form_script')
     @endsection

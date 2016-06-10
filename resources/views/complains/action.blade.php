@@ -94,4 +94,5 @@
         });
 
     </script>
+    @include('complains.partials.form_script')
 @endsection

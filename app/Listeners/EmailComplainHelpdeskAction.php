@@ -63,7 +63,7 @@ class EmailComplainHelpdeskAction
 
         if($complain_status_id==3)
         {
-            Mail::send('complains.email.complain_helpdesk_action', $data,function ($message) use ($data,$complain_email,$complain_name,$helpdesk_email)
+            Mail::queue('complains.email.complain_helpdesk_action', $data,function ($message) use ($data,$complain_email,$complain_name,$helpdesk_email)
             {
 
                 $message->from($helpdesk_email, 'ICT Helpdesk');
@@ -74,7 +74,7 @@ class EmailComplainHelpdeskAction
 
         elseif($complain_status_id==7)
         {
-            Mail::send('complains.email.complain_helpdesk_manage', $data,function ($message) use ($data,$complain_email,$complain_name,$helpdesk_email,$ketua_unit)
+            Mail::queue('complains.email.complain_helpdesk_manage', $data,function ($message) use ($data,$complain_email,$complain_name,$helpdesk_email,$ketua_unit)
             {
                 $message->from($helpdesk_email, $complain_name);
                 $message->to($ketua_unit, 'Ketua/Pengurus Unit')->subject('Aduan Baru');
@@ -82,7 +82,7 @@ class EmailComplainHelpdeskAction
         }
         elseif($complain_status_id==5)
         {
-            Mail::send('complains.email.complain_helpdesk_tutup', $data,function ($message) use ($data,$complain_email,$complain_name,$helpdesk_email)
+            Mail::queue('complains.email.complain_helpdesk_tutup', $data,function ($message) use ($data,$complain_email,$complain_name,$helpdesk_email)
             {
                 $message->from($helpdesk_email,'ICT Helpdesk');
                 $message->to($complain_email, $complain_name)->subject('Aduan Ditutup');

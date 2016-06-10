@@ -24,8 +24,8 @@
                 </div>
             </div>
             <hr>
-            <div class="table-responsive">
-            <table class="table table-hover">
+            <div class="col-md-12">
+            <table class="table table-hover table-responsive">
 
                 <tr>
                     <th>Bil. Aduan</th>
@@ -81,8 +81,8 @@
                                 <div class="btn-group btn-group-sm">
 
                                     @if (Entrust::can('assign_complain') )
-                                        <a href="{{route('complain.assign_staff',$rekodcomplain->complain_id)}}" ><span class="glyphicon glyphicon-wrench"></span>Agih Tugas</a>
-
+                                        <a href="{{route('complain.assign_staff',$rekodcomplain->complain_id)}}" class="btn btn-warning">
+                                            <span class="glyphicon glyphicon-hand-up"></span> Agih Tugas</a>
                                     @endif
 
                                 </div>

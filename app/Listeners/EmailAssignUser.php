@@ -59,7 +59,7 @@ class EmailAssignUser
 
 
 
-        Mail::send('complains.email.complain_assign_action', $data,function ($message) use ($data,$complain_email,$complain_name,$assign_user,$ketua_unit)
+        Mail::queue('complains.email.complain_assign_action', $data,function ($message) use ($data,$complain_email,$complain_name,$assign_user,$ketua_unit)
         {
 
             $message->from($ketua_unit, 'Ketua/Pengurus Unit');

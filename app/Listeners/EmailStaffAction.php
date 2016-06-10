@@ -64,7 +64,7 @@ class EmailStaffAction
         ];
 
 
-            Mail::send('complains.email.complain_staff_action', $data,function ($message) use ($data,$complain_email,$complain_name,$action_id)
+            Mail::queue('complains.email.complain_staff_action', $data,function ($message) use ($data,$complain_email,$complain_name,$action_id)
             {
 
                 $message->from($action_id, 'Staff Berkenaan');

@@ -6,8 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class ComplainAttachment extends Model
 {
-    public function complain()
+    protected $table = 'complain_attachments';
+    protected $primaryKey = 'attachment_id';
+
+
+    public function attachable()
     {
-        return $this->hasMany('App\Complain');
+        return $this->morphTo();
     }
 }

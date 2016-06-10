@@ -26,7 +26,33 @@ class ComplainRequest extends Request
         $route_name = $this->route()->getName();
         switch($this->method()){
             case 'POST' : {
-                return ['complain_description'=>'required'];
+                $validation_rules = array(
+                    'complain_category_id'=>'required',
+                    'complain_source_id'=>'required',
+                    'complain_description'=>'required',
+                    'complain_attachment' => 'mimes:jpeg,bmp,png,pdf,doc,docs,txt,zip,rar',
+                    );
+
+                $aduan_category_exception_value = array('5','6');
+
+                $others_field_validation = array(
+                    'branch_id'=>'required',
+                    'lokasi_id'=>'required',
+                    'ict_no'=>'required',
+                );
+
+                $complain_category_id_exp = explode('-',$this->complain_category_id );
+                $complain_category_id = $complain_category_id_exp[0];
+
+                if(!in_array($complain_category_id,$aduan_category_exception_value))
+                {
+                    $validation_rules = $others_field_validation + $validation_rules;
+                }
+
+                return $validation_rules;
+
+
+
             }
             case 'PUT' : {
 //            dd($route_name);
@@ -38,11 +64,19 @@ class ComplainRequest extends Request
                     $validation_rules = array(
                         'complain_category_id'=> 'required',
                         'lokasi_id' => 'required',
+                        'ict_no'=> 'required',
                     );
 
                     if($this->hide_dropdown_category=='Y')
                     {
                         array_pull($validation_rules,'complain_category_id');
+                    }
+
+                    if($this->exclude_branch_asset=='Y')
+                    {
+                        array_pull($validation_rules,'complain_category_id');
+                        array_pull($validation_rules,'lokasi_id');
+                        array_pull($validation_rules,'ict_no');
                     }
                 }
                 else if($route_name=='complain.update_action')
@@ -68,6 +102,9 @@ class ComplainRequest extends Request
         return [
             'complain_description.required' => 'Aduan perlu diisi!',
             'lokasi_id.required' => 'Lokasi perlu diisi!',
+            'ict_no.required' => 'Aset perlu diisi!',
+            'branch_id.required' => 'Cawangan perlu diisi!',
+            'complain_category_id.required' => 'Kategori perlu diisi!',
         ];
     }
 }

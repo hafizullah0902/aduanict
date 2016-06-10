@@ -1,0 +1,8 @@
+/* SAMPLE CSS STYLES FOR JQUERY CLOCK PLUGIN */
+  .jqclock { background: White; margin-top: 5px; }
+  .clockdate { color: DarkRed; margin-bottom: 10px; font-size: 18px; display: block;}
+  .clocktime {  background: White;color: Black; }
+
+  .jqclock2 { float:left; text-align:center; border: 1px Black solid; background: LightYellow; padding: 10px; margin:20px; }
+
+  .clocktime2 { border: 2px inset White; background: Black; padding: 5px; font-size: 14px; font-family: "Courier"; color: LightGreen; margin: 2px; display: block; }
