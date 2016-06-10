@@ -8,7 +8,7 @@
     @if($editComplain->complain_status_id==1)
 
         @include('complains.partials.edit_form')
-    @else
+    @elseif($editComplain->complain_status_id==3 && ($editComplain->user_id==Auth::user()->emp_id ||$editComplain->user_emp_id==Auth::user()->emp_id))
 
         <div class="container">
             <ul class="nav nav-tabs" role="tablist">
@@ -16,28 +16,46 @@
                     <a href="#pengesahan" aria-controls="pengesahan" role="tab" data-toggle="tab"><strong>PENGESAHAN ADUAN</strong></a>
                 </li>
                 <li role="presentation">
-                    <a href="#bayaran" aria-controls="bayaran" role="tab" data-toggle="tab"><strong>MAKLUMAT ADUAN</strong></a>
+                    <a href="#aduan" aria-controls="aduan" role="tab" data-toggle="tab"><strong>MAKLUMAT ADUAN</strong></a>
                 </li>
                 <li role="presentation">
-                    <a href="#bayaran2" aria-controls="bayaran2" role="tab" data-toggle="tab"><strong>SEJARAH TINDAKAN</strong></a>
+                    <a href="#sejarah" aria-controls="sejarah" role="tab" data-toggle="tab"><strong>SEJARAH TINDAKAN</strong></a>
                 </li>
             </ul>
         </div>
 
         <div class="tab-content paddingcontent">
-
-            <div role="tabpanel" class="tab-pane fade in active" id="pengesahan">
+            <div role="tabpanel1" class="tab-pane fade in active" id="pengesahan">
                 @include('complains.partials.verify_form')
             </div>
-            <div role="tabpanel" class="tab-pane fade in active" id="bayaran">
+            <div role="tabpanel" class="tab-pane fade" id="aduan">
                 @include('complains.partials.view_form')
             </div>
-            <div role="tabpanel" class="tab-pane fade" id="bayaran2">
+            <div role="tabpanel" class="tab-pane fade" id="sejarah">
                 <h3>Sejarah Tindakan</h3>
                 @include('complains.partials.complain_action_log')
             </div>
         </div>
-
+    {{--@else
+        <div class="container">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active">
+                    <a href="#aduan" aria-controls="aduan" role="tab" data-toggle="tab"><strong>MAKLUMAT ADUAN</strong></a>
+                </li>
+                <li role="presentation">
+                    <a href="#sejarah" aria-controls="sejarah" role="tab" data-toggle="tab"><strong>SEJARAH TINDAKAN</strong></a>
+                </li>
+            </ul>
+        </div>
+        <div class="tab-content paddingcontent">
+            <div role="tabpanel" class="tab-pane fade in active" id="aduan">
+                @include('complains.partials.view_form')
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="sejarah">
+                <h3>Sejarah Tindakan</h3>
+                @include('complains.partials.complain_action_log')
+            </div>
+        </div>--}}
     @endif
 
 
@@ -47,14 +65,37 @@
         $( document).ready(function () {
 
             $("#submit_finish").click(function () {
-                var submit_type='finish';
-                submit_form(submit_type);
+                swal({   title: "Anda Pasti - Aduan telah SELESAI",
+                            text: "Makluman : Tindakan ini tidak boleh dikemaskini",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Ya,saya Pasti",
+                            closeOnConfirm: false
+                        },
+                        function() {
+                            var submit_type='finish';
+                            submit_form(submit_type);
+
+                        });
 
             });
 
             $("#submit_reject").click(function () {
-                var submit_type='reject';
-                submit_form(submit_type);
+                swal({   title: "Anda Pasti - Aduan TIDAK SELESAI",
+                            text: "Makluman : Tindakan ini tidak boleh dikemaskini",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Ya,saya Pasti",
+                            closeOnConfirm: false
+                        },
+                        function() {
+                            var submit_type='reject';
+                            submit_form(submit_type);
+
+                        });
+
 
             });
 

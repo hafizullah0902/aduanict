@@ -2,7 +2,7 @@
 {!! Form::open(array('route' => ['complain.verify',$editComplain->complain_id],'method'=>'put','class'=>"form-horizontal", 'id'=>"form1")) !!}
 <div class="panel panel-success">
     <div class="panel-heading">
-        <h3 class="panel-title">Tarikh/Masa - {{$editComplain->created_at}} </h3>
+        <h3 class="panel-title">Pengesahan Aduan</h3>
     </div>
     <div class="panel-body">
         <div class="form-group">
@@ -24,7 +24,7 @@
                 {{ $editComplain->delay_reason }}
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group {{ $errors->has('user_comment') ? 'has-error' : false }}">
             <label class="col-sm-2 control-label">Sebab (Tidak Selesai)</label>
             <div class="col-sm-6">
                 <p class="form-control-static">

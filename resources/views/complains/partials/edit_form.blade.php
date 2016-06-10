@@ -4,12 +4,11 @@
     </div>
     {!! Form::open(array('route' => ['complain.update',$editComplain->complain_id],'method'=>'put','class'=>"form-horizontal")) !!}
     <div class="panel-body">
-        {{--<form class="form-horizontal">--}}
-        {{--<div class="form-group">
-            <div class="pull-right col-sm-2 col-xs-10">
-            <div id="clock" class="jqclock2"></div>
-            <input type="hidden" id="servertime" value="{{time()}}">
-        </div>--}}
+
+        {{--<div class="form-group">--}}
+            {{--<div id="clock" class="jqclock2 col-sm-1"></div>--}}
+            {{--<input type="hidden" id="servertime" value="{{time()}}">--}}
+        {{--</div>--}}
         <div class="form-group">
             <label class="col-sm-2 control-label">Tarikh </label>
             <div class="col-sm-2">

@@ -30,10 +30,11 @@ use Auth;
 use App\User;
 use Entrust;
 
-class ComplainController extends Controller
+class ComplainController extends BaseController
 {
     //    code untuk trigger login or belum
     public function __construct(Request $request){
+        
         $this->middleware('auth');
         $this->user_id = 0;
         $this->unit_id = 0;
@@ -47,38 +48,187 @@ class ComplainController extends Controller
         $this-> exclude_array =[5,6];
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+/* ========================================FUNCTION UMUM ==============================================================*/
     public function index()
     {
-        if(Entrust::hasRole('user'))
+        if(Entrust::hasRole('user') || Entrust::hasRole('unit_manager'))
         {
-            $complain2 =Complain::where('user_emp_id',$this->user_id)
+            $complain2 =Complain::with('user','action_user')
+                                ->where(function($query){
+                                $query->orwhere('user_emp_id',$this->user_id)
                                 ->orwhere('action_emp_id',$this->user_id)
                                 ->orwhere('user_id',$this->user_id)
-                                ->paginate(20);
+                                ->orwhere('unit_id',$this->unit_id);
+                                });
+
         }
-        elseif(Entrust::hasRole('unit_manager'))
-        {
-            $complain2 =Complain::where('user_emp_id',$this->user_id)
-                ->orwhere('action_emp_id',$this->user_id)
-                ->orwhere('user_id',$this->user_id)
-                ->orwhere('unit_id',$this->unit_id)
-                ->where('complain_status_id','!=',7)
-                ->paginate(20);
-        }
+
         else
         {
-            $complain2 =Complain::orderBy('created_at','DESC')->paginate(15);
+            $complain2 =Complain::with('user','action_user');
         }
 
+        if(!empty($this->request->complain_status_id))
+        {
+            $complain2 = $complain2->where('complain_status_id',$this->request->complain_status_id);
 
-        return view('complains/index',compact('complain2'));
+        }
+        if(!empty($this->request->carian))
+        {
+           $complain2 = $complain2->where(function($query){
+               $query->orwhere('complain_id','like','%'.$this->request->carian.'%')
+//                   ->orwhere('action_comment','like','%'.$this->request->carian.'%')
+//                   ->orwhere('complain_description','like','%'.$this->request->carian.'%')
+                ;
+           });
+
+
+        }
+        if(!empty($this->request->start_date))
+        {
+            $start_date = $this->format_date($this->request->start_date);
+            $complain2 = $complain2->whereDate('created_at','>=',$start_date);
+
+        }
+        if(!empty($this->request->end_date))
+        {
+            $end_date = $this->format_date($this->request->end_date);
+            $complain2 = $complain2->whereDate('created_at','<=',$end_date);
+
+        }
+
+        $complain2=$complain2->orderBy('created_at','desc')->paginate(20);
+
+        $complain_status = $this->get_complain_status();
+        return view('complains/index',compact('complain2','complain_status'));
     }
 
+    public function create()
+    {
+        $users = User::where('emp_id','!=',Auth::user()->emp_id)->lists('name','emp_id');
+        $users = array(''=>'Pilih Bagi Pihak') + $users->all();
+
+        $complain_categories = $this->get_complain_categories();
+        $asset_location = $this->get_location();
+        $branch = $this->get_branch();
+        $unit_id = $this->get_kod_unit();
+        $ict_no = $this->get_assets();
+
+        $complain_sources = ComplainSource::lists('description','source_id');
+        $complain_sources = array(''=>'Pilih Saluran Aduan') + $complain_sources->all();
+
+        return view('complains/create',compact('users','complain_categories','complain_sources','asset_location','branch','unit_id','ict_no'));
+    }
+
+
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    // cara panjang    public function store(Request $request)
+    public function store(ComplainRequest $request)
+    {
+        /**cek data dalam form
+        dd($request->toArray()); */
+        /* cara panjang $messages = [
+            'required'    => 'Input :attribute wajib diisi.',
+            'numeric'    => 'Input :attribute mesti nombor sahaja.',
+            'between' => 'The :attribute must be between :min - :max.',
+            'in'      => 'The :attribute must be one of the following types: :values',
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'complain_description' => 'required',
+        ],$messages);
+
+        if ($validator->fails()) {
+            return redirect(route('complain.create'))
+                ->withErrors($validator)
+                ->withInput();
+        } else {*/
+        $user_id = Auth::user()->emp_id;
+
+        $complain_status_id=1;
+        $complain_description = $request->complain_description;
+        $user_emp_id = $request->user_emp_id;
+        $complain_source_id = $request->complain_source_id;
+        $lokasi_id = $request->lokasi_id;
+        $branch_id = $request->branch_id;
+        $ict_no = $request->ict_no;
+        $category_explode = explode('-',$request->complain_category_id );
+        $complain_category_id = $category_explode[0];
+        $unit_id = $category_explode[1];
+
+        if(empty($user_emp_id))
+        {
+            $user_emp_id = Auth::user()->emp_id;
+        }
+
+        $aduan_category_exception_value = array('5','6');
+
+        if(in_array($complain_category_id,$aduan_category_exception_value ))
+        {
+
+            $lokasi_id = null;
+            $ict_no = null;
+        }
+
+        $complain = new Complain;
+        $complain->user_id = $user_id;
+        $complain->complain_description = $complain_description;
+        $complain->complain_status_id = $complain_status_id;
+        $complain->user_emp_id=$user_emp_id;
+        $complain->complain_source_id=$complain_source_id;
+        $complain->unit_id=$unit_id;
+        $complain->complain_category_id=$complain_category_id;
+        $complain->lokasi_id=$lokasi_id;
+        $complain->branch_id=$branch_id;
+        $complain->ict_no=$ict_no;
+
+//             return $request->all();
+        $complain->save();
+
+        if($request->hasFile('complain_attachment') && $request->file('complain_attachment')->isValid())
+        {
+            $fileName = $complain->complain_id.'-'.$request->file('complain_attachment')->getClientOriginalName();
+
+//                dd($fileName);
+            $destination_path = base_path().'/public/uploads/';
+            $request->file('complain_attachment')->move($destination_path,$fileName);
+
+            $complain_attachment = new ComplainAttachment();
+
+            $complain_attachment->attachment_filename = $fileName;
+            $complain->attachments()->save($complain_attachment);
+
+        }
+
+        Event::fire(new ComplainCreated($complain));
+
+        Flash::success('Aduan '.$id.' berjaya di hantar');
+        return redirect(route('complain.index'));
+
+
+
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $editComplain=Complain::find($id);
+        $complain_actions = $this->get_complain_action($id);
+
+        return view('complains/show',compact('editComplain','complain_actions'));
+
+    }
 
     /* FUNCTION UNTUK MANAGER AGIH STAFF
     ==================================MULA========================================================================== */
@@ -128,7 +278,8 @@ class ComplainController extends Controller
 
         $complain_action->save();
 
-        return view('complains/assign_staff',compact('editComplain','complain_actions','unit_staff_list'));
+//        return view('complains/assign_staff',compact('editComplain','complain_actions','unit_staff_list'));
+        return view('complains/show',$id);
     }
 
     /*==================================END FUNCTION MANAGER========================================================= */
@@ -230,7 +381,8 @@ class ComplainController extends Controller
 
 
         }
-        return view('complains/technical_action',compact('editComplain','complain2','complain_categories','complain_status','complain_actions','branch','asset_location','unit_id','ict_no','complain_statuses'));
+//        return view('complains/technical_action',compact('editComplain','complain2','complain_categories','complain_status','complain_actions','branch','asset_location','unit_id','ict_no','complain_statuses'));
+        return redirect(route('complain.index'));
     }
 
     /**
@@ -238,128 +390,7 @@ class ComplainController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        $users = User::where('emp_id','!=',Auth::user()->emp_id)->lists('name','emp_id');
-        $users = array(''=>'Pilih Bagi Pihak') + $users->all();
 
-        $complain_categories = $this->get_complain_categories();
-        $asset_location = $this->get_location();
-        $branch = $this->get_branch();
-        $unit_id = $this->get_kod_unit();
-        $ict_no = $this->get_assets();
-        
-        $complain_sources = ComplainSource::lists('description','source_id');
-        $complain_sources = array(''=>'Pilih Saluran Aduan') + $complain_sources->all();
-
-        return view('complains/create',compact('users','complain_categories','complain_sources','asset_location','branch','unit_id','ict_no'));
-    }
-
-
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    // cara panjang    public function store(Request $request)
-    public function store(ComplainRequest $request)
-    {
-       /**cek data dalam form
-        dd($request->toArray()); */
-        /* cara panjang $messages = [
-            'required'    => 'Input :attribute wajib diisi.',
-            'numeric'    => 'Input :attribute mesti nombor sahaja.',
-            'between' => 'The :attribute must be between :min - :max.',
-            'in'      => 'The :attribute must be one of the following types: :values',
-        ];
-
-        $validator = Validator::make($request->all(), [
-            'complain_description' => 'required',
-        ],$messages);
-
-        if ($validator->fails()) {
-            return redirect(route('complain.create'))
-                ->withErrors($validator)
-                ->withInput();
-        } else {*/
-            $user_id = Auth::user()->emp_id;
-
-            $complain_status_id=1;
-            $complain_description = $request->complain_description;
-            $user_emp_id = $request->user_emp_id;
-            $complain_source_id = $request->complain_source_id;
-            $lokasi_id = $request->lokasi_id;
-            $branch_id = $request->branch_id;
-            $ict_no = $request->ict_no;
-            $category_explode = explode('-',$request->complain_category_id );
-            $complain_category_id = $category_explode[0];
-            $unit_id = $category_explode[1];
-
-            if(empty($user_emp_id))
-            {
-                $user_emp_id = Auth::user()->emp_id;
-            }
-
-            $aduan_category_exception_value = array('5','6');
-
-            if(in_array($complain_category_id,$aduan_category_exception_value ))
-            {
-
-                $lokasi_id = null;
-                $ict_no = null;
-            }
-
-            $complain = new Complain;
-            $complain->user_id = $user_id;
-            $complain->complain_description = $complain_description;
-            $complain->complain_status_id = $complain_status_id;
-            $complain->user_emp_id=$user_emp_id;
-            $complain->complain_source_id=$complain_source_id;
-            $complain->unit_id=$unit_id;
-            $complain->complain_category_id=$complain_category_id;
-            $complain->lokasi_id=$lokasi_id;
-            $complain->branch_id=$branch_id;
-            $complain->ict_no=$ict_no;
-
-//             return $request->all();
-            $complain->save();
-
-            if($request->hasFile('complain_attachment') && $request->file('complain_attachment')->isValid())
-            {
-                $fileName = $complain->complain_id.'-'.$request->file('complain_attachment')->getClientOriginalName();
-
-//                dd($fileName);
-                $destination_path = base_path().'/public/uploads/';
-                $request->file('complain_attachment')->move($destination_path,$fileName);
-
-                $complain_attachment = new ComplainAttachment();
-
-                $complain_attachment->attachment_filename = $fileName;
-                $complain->attachments()->save($complain_attachment);
-
-            }
-
-            Event::fire(new ComplainCreated($complain));
-
-            Flash::success('Aduan berjaya di hantar');
-            return redirect(route('complain.index'));
-
-
-
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        return view('complains/show');
-    }
 
 
     public function get_kod_unit($filter=array())
@@ -515,7 +546,7 @@ class ComplainController extends Controller
         return redirect(route('complain.index'));
     }
 
-    public function verify(Request $request, $id)
+    public function verify(ComplainRequest $request, $id)
     {
         $submit_type = $request->submit_type;
 
@@ -549,6 +580,7 @@ class ComplainController extends Controller
         $complain_action->save();
 
 //        return back();
+        Flash::success('Aduan '.$id.' berjaya di hantar');
         return redirect(route('complain.index'));
     }
 
@@ -572,135 +604,6 @@ class ComplainController extends Controller
     }
 
     
-    function get_complain_categories()
-    {
-        $complain_categories = ComplainCategory::select('description', DB::raw('CONCAT(category_id, "-" , kod_unit) AS category_value'))->lists('description','category_value');
-        $complain_categories = array(''=>'Pilih Kategori Aduan') + $complain_categories->all();
-        return $complain_categories;
-    }
 
-    function get_complain_status()
-    {
-        $complain_status = ComplainStatus::lists('description','status_id');
-        $complain_status = array(''=>'Pilih Status Aduan') + $complain_status->all();
-
-        return $complain_status;
-    }
-
-    function get_location($filter=array())
-    {
-        if(isset($filter['branch_id']) && !empty($filter['branch_id']))
-        {
-            $branch_id = $filter['branch_id'];
-        }
-
-        if($this->request->has('branch_id'))
-        {
-            $branch_id = $this->request->input ('branch_id');
-        }
-
-        if(empty($branch_id))
-        {
-            $validation_branch_id = $this->request->old('branch_id');
-            $branch_id = $validation_branch_id;
-        }
-
-        if(!empty($branch_id))
-        {
-            $asset_location = AssetsLocation::where('branch_id',$branch_id)->lists('location_description','location_id');
-        }
-        else
-        {
-            $asset_location = AssetsLocation::lists('location_description','location_id');
-        }
-
-        $asset_location = array(''=>'Pilih Lokasi Aduan') + $asset_location->all();
-
-        return $asset_location;
-    }
-
-    function get_assets($filter=array())
-    {
-        
-        $lokasi_id = $this->request->lokasi_id;
-
-        if(isset($filter['lokasi_id']) && !empty($filter['lokasi_id']))
-        {
-            $lokasi_id = $filter['lokasi_id'];
-        }
-
-        if(empty($lokasi_id))
-        {
-            $validation_lokasi_id = $this->request->old('lokasi_id');
-            $lokasi_id = $validation_lokasi_id;
-        }
-
-        if(!empty($lokasi_id))
-        {
-
-            $ict_no = Asset::select('asset_id', DB::raw('CONCAT(asset_id, " - " , butiran) AS butiran_aset'))
-                            ->where('lokasi_id',$lokasi_id)->lists('butiran_aset','asset_id');
-
-            $ict_no = array(''=>'Pilih Aset Berkenaan') + $ict_no->all();
-        }
-        
-        else
-        {
-
-            $ict_no = array(''=>'Pilih Aset Berkenaan');
-        }
-
-
-
-        return $ict_no;
-    }
-
-    function get_branch()
-    {
-        $branch = Branch::lists('branch_description','id');
-        $branch = array(''=>'Pilih Cawangan Berkenaan') + $branch->all();
-
-        return $branch;
-    }
-
-    function get_complain_action($id)
-    {
-        $complain_actions = Complain::find($id)->complain_action()->orderBy('id','desc')->get();
-        return $complain_actions;
-    }
-
-    function prepare_branch_location_assets($editComplain,$method='edit')
-    {
-
-        if(!in_array($editComplain->complain_category_id,$this->exclude_array ))
-        {
-            $complain_branchId = $editComplain->assets_location->branch_id;
-            $location_filter = array('branch_id'=>$complain_branchId);
-            $complain_lokasi_id = $editComplain->lokasi_id;
-            $asset_filter = ['lokasi_id'=>$complain_lokasi_id];
-            $asset_location = $this->get_location($location_filter);
-            $ict_no = $this->get_assets($asset_filter);
-            $branch = $this->get_branch();
-            $hide_branch_location_asset = 'N';
-        }
-        else
-        {
-            if($method=='action')
-            {
-                $branch = $this->get_branch();
-                $ict_no = $this->get_assets();
-                $asset_location = $this->get_location();
-                $hide_branch_location_asset = 'N';
-            }else
-            {
-                $asset_location = [];
-                $ict_no = [];
-                $branch = [];
-                $hide_branch_location_asset = 'Y';
-            }
-
-        }
-        return ['branch'=>$branch,'asset_location'=>$asset_location,'ict_no'=>$ict_no,'hide_branch_location_asset'=>$hide_branch_location_asset];
-    }
     
 }

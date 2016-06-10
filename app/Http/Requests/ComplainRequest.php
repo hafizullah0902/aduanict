@@ -90,6 +90,17 @@ class ComplainRequest extends Request
                     }
 
                 }
+                else if($route_name=='complain.verify')
+                {
+                    if($this->submit_type =='reject')
+                    {
+                        $validation_rules = array('user_comment'=> 'required',
+
+                        );
+
+                    }
+
+                }
                 return $validation_rules;
             }
             default:break;
@@ -105,6 +116,7 @@ class ComplainRequest extends Request
             'ict_no.required' => 'Aset perlu diisi!',
             'branch_id.required' => 'Cawangan perlu diisi!',
             'complain_category_id.required' => 'Kategori perlu diisi!',
+            'user_comment.required' => 'Komen perlu diisi jika tidak selesai',
         ];
     }
 }
