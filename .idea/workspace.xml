@@ -1,19 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="cc54bdd6-483b-451c-aa5b-f731b03a2d8a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/ComplainAction.php" afterPath="$PROJECT_DIR$/app/ComplainAction.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Http/Controllers/ComplainController.php" afterPath="$PROJECT_DIR$/app/Http/Controllers/ComplainController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Http/Requests/ComplainRequest.php" afterPath="$PROJECT_DIR$/app/Http/Requests/ComplainRequest.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/css/jqClock.css" afterPath="$PROJECT_DIR$/public/css/jqClock.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/views/complains/edit.blade.php" afterPath="$PROJECT_DIR$/resources/views/complains/edit.blade.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/views/complains/index.blade.php" afterPath="$PROJECT_DIR$/resources/views/complains/index.blade.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/views/complains/partials/complain_action_log.blade.php" afterPath="$PROJECT_DIR$/resources/views/complains/partials/complain_action_log.blade.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/views/complains/partials/edit_form.blade.php" afterPath="$PROJECT_DIR$/resources/views/complains/partials/edit_form.blade.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/views/complains/partials/verify_form.blade.php" afterPath="$PROJECT_DIR$/resources/views/complains/partials/verify_form.blade.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/views/complains/partials/view_form.blade.php" afterPath="$PROJECT_DIR$/resources/views/complains/partials/view_form.blade.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resources/views/complains/show.blade.php" afterPath="$PROJECT_DIR$/resources/views/complains/show.blade.php" />
-    </list>
+    <list default="true" id="cc54bdd6-483b-451c-aa5b-f731b03a2d8a" name="Default" comment="" />
     <ignored path="aduanict.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -751,16 +739,16 @@
       <workItem from="1464576419914" duration="440000" />
       <workItem from="1464576941305" duration="99034000" />
       <workItem from="1465173486218" duration="71748000" />
-      <workItem from="1465433119502" duration="43893000" />
+      <workItem from="1465433119502" duration="44027000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="299800000" />
+    <option name="totallyTimeSpent" value="299934000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Gulp" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.171875" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
