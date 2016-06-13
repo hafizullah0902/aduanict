@@ -42,7 +42,7 @@
                 </div>
             </div>
             <hr>
-            <div class="col-sm-12">
+            <div class="col-md-12">
             <table class=" table table-responsive table-hover">
 
                 <tr>

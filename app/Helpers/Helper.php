@@ -116,7 +116,7 @@ namespace App\Helpers;
             }
             if (Entrust::can("delete_complain"))
                 {
-                    $function_button= $function_button.' '.'<button type="button" class="glyphicon glyphicon-trash" data-destroy>Padam</button>';
+                    $function_button= $function_button.' '.'<button type="button" class="btn btn-danger glyphicon glyphicon-trash" data-destroy> Padam </button>';
                 }
             return $function_button;
 

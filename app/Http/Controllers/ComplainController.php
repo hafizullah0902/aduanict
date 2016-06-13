@@ -37,7 +37,7 @@ class ComplainController extends BaseController
 
         parent::__construct();
 
-        $this->middleware('ComplainPermission');
+//        $this->middleware('ComplainPermission');
         $this-> request =$request;
         
         
