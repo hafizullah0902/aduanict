@@ -13,19 +13,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use PDF;
 
-class ReportController extends Controller
+class ReportController extends BaseController
 {
 
     public function __construct(Request $request){
-        $this->middleware('auth');
-        $this->user_id = 0;
-        $this->unit_id = 0;
 
-        if(Auth::check())
-        {
-            $this->user_id=Auth::user()->emp_id;
-            $this->unit_id=Auth::user()->kod_id;
-        }
+        parent::__construct();
+
+        $this->middleware('ReportPermission');
         $this-> request =$request;
     }
 
@@ -194,19 +189,5 @@ class ReportController extends Controller
         return ['start_date'=>$start_date,'end_date'=>$end_date];
 
     }
-
-    function get_complain_categories()
-    {
-        $complain_categories = ComplainCategory::select('description', DB::raw('CONCAT(category_id, "-" , kod_unit) AS category_value'))->lists('description','category_value');
-        $complain_categories = array(''=>'Pilih Kategori Aduan') + $complain_categories->all();
-        return $complain_categories;
-    }
-
-    function get_branch()
-    {
-        $branch = Branch::lists('branch_description','id');
-        $branch = array(''=>'Pilih Cawangan Berkenaan') + $branch->all();
-
-        return $branch;
-    }
+    
 }

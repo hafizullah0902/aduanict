@@ -76,22 +76,11 @@
                                 </td>
                         <td>{{ str_limit($rekodcomplain->complain_description,40) }}</td>
                         <td>
-                            @if ($rekodcomplain->complain_status_id == 1)
-                                <span class="label label-primary">Baru</span>
-                            @elseif ($rekodcomplain->complain_status_id == 2)
-                                <span class="label label-info">Tindakan</span>
-                            @elseif ($rekodcomplain->complain_status_id == 3)
-                                <span class="label label-success">Sahkan (P)</span>
-                            @elseif ($rekodcomplain->complain_status_id == 4)
-                                <span class="label label-success">Sahkan (H)</span>
-                            @elseif ($rekodcomplain->complain_status_id == 5)
-                                <span class="label label-success">Selesai</span>
-                            @elseif ($rekodcomplain->complain_status_id == 7)
-                                <span class="label label-warning">Agihan</span>
-                            @endif</td>
-                        <td>{{ $rekodcomplain->complain_source->description }}</td>
-                        <td>{{ $rekodcomplain->bagiPihak->name }}</td>
-                        <td>{{ $rekodcomplain->complain_category->description }}</td>
+                            {!! Helper::get_status_panel($rekodcomplain->complain_status_id) !!}
+                        </td>
+                        <td>{{ $rekodcomplain->complain_source->description or $rekodcomplain->complain_source_id }}</td>
+                        <td>{{ $rekodcomplain->bagiPihak->name or $rekodcomplain->user_emp_id}}</td>
+                        <td>{{ $rekodcomplain->complain_category->description or $rekodcomplain->complain_category_id}}</td>
                         <td>{{ str_limit($rekodcomplain->action_comment,40) }}</td>
                         <td>{{ $rekodcomplain->action_date }}</td>
                         <td>
@@ -99,11 +88,13 @@
                             {!! Form::open(array('route' => ['complain.destroy',$rekodcomplain->complain_id],'method'=>'delete','class'=>"form-horizontal")) !!}
                                 <div class="btn-group btn-group-sm">
 
-                                    @if($rekodcomplain->complain_status_id == 1)
+                                    {!! Helper::get_function_button($rekodcomplain) !!}
+
+                                    {{--@if($rekodcomplain->complain_status_id == 1)
                                         @if(Entrust::can('action_complain')&& Entrust::hasRole('ict_helpdesk'))
                                             <a href="{{route('complain.action',$rekodcomplain->complain_id)}}" class="btn btn-warning">
                                                 <span class="glyphicon glyphicon-wrench"></span> Kemaskini</a>
-                                        @elseif (Entrust::can('edit_complain'))
+                                        @elseif (Entrust::can('edit_complain')&& ($rekodcomplain->user_id==Auth::user()->emp_id || $rekodcomplain->user_emp_id==Auth::user()->emp_id))
                                             <a href="{{route('complain.edit',$rekodcomplain->complain_id)}}" class="btn btn-primary">
                                                 <span class="glyphicon glyphicon-edit"></span> Kemaskini</a>
                                         @elseif (Entrust::can('delete_complain'))
@@ -145,7 +136,7 @@
                                         <a href="{{route('complain.show',$rekodcomplain->complain_id)}}" class="btn btn-info">
                                             <span class="glyphicon glyphicon-eye-open"></span> Papar</a>
 
-                                    @endif
+                                    @endif--}}
                                 </div>
                             {!! Form::close() !!}
                         </td>

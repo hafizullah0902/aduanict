@@ -12,13 +12,23 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class BaseController extends Controller
 {
-    public function __construct(Request $request){
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->user_id = 0;
+        $this->unit_id = 0;
 
-
+        if(Auth::check())
+        {
+            $this->user_id=Auth::user()->emp_id;
+            $this->unit_id=Auth::user()->kod_id;
+        }
+        $this-> exclude_array =[5,6];
     }
 
 

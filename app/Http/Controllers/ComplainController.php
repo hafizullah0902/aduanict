@@ -34,18 +34,13 @@ class ComplainController extends BaseController
 {
     //    code untuk trigger login or belum
     public function __construct(Request $request){
-        
-        $this->middleware('auth');
-        $this->user_id = 0;
-        $this->unit_id = 0;
 
-        if(Auth::check())
-        {
-            $this->user_id=Auth::user()->emp_id;
-            $this->unit_id=Auth::user()->kod_id;
-        }
+        parent::__construct();
+
+        $this->middleware('ComplainPermission');
         $this-> request =$request;
-        $this-> exclude_array =[5,6];
+        
+        
     }
 
 /* ========================================FUNCTION UMUM ==============================================================*/
@@ -98,8 +93,8 @@ class ComplainController extends BaseController
         }
 
         $complain2=$complain2->orderBy('created_at','desc')->paginate(20);
-
         $complain_status = $this->get_complain_status();
+        
         return view('complains/index',compact('complain2','complain_status'));
     }
 
@@ -227,7 +222,6 @@ class ComplainController extends BaseController
         $complain_actions = $this->get_complain_action($id);
 
         return view('complains/show',compact('editComplain','complain_actions'));
-
     }
 
     /* FUNCTION UNTUK MANAGER AGIH STAFF
@@ -241,6 +235,7 @@ class ComplainController extends BaseController
 
         return view('complains/assign_index',compact('complain2'));
     }
+    
     public function assign_staff($id)
     {
 

@@ -214,6 +214,7 @@ return [
         'Flash' => 'Laracasts\Flash\Flash',
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
+        'Helper' => App\Helpers\Helper::class,
 
 
     ],
