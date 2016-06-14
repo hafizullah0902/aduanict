@@ -35,6 +35,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('check_session','Auth\AuthController@check_session')->name('check_session');
+
 Route::get('complain/{complain}/action','ComplainController@action')->name('complain.action');
 Route::put('complain/action/{complain}','ComplainController@update_action')->name('complain.update_action');
 Route::put('complain/verify/{complain}','ComplainController@verify')->name('complain.verify');

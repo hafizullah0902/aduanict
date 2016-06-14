@@ -145,9 +145,44 @@
     $('.datepicker').datepicker(
         {
             format: 'dd-mm-yyyy',
-
         }
     );
+        setInterval(function() {
+            check_session();
+        }, 5000);
+
+        function check_session()
+        {
+            $.ajax({
+                type: "GET",
+                url: base_url + '/check_session',
+                dataType: "json",
+
+                beforeSend: function () {
+
+                },
+                success: function (check_data) {
+                    if(!check_data.logged_in)
+                    {
+                        swal({
+                                    title: "Sesi Anda telah tamat",
+                                    text: "Sila klik Login",
+                                    type: "error",
+                                    showCancelButton: false,
+                                    confirmButtonClass: "btn-danger",
+                                    confirmButtonText: "Login",
+                                    closeOnConfirm: false
+                                },
+                                function(isConfirm) {
+                                    
+                                        location.reload();
+                                });
+
+                    }
+                }
+            });
+        }
+
     });
 
 </script>

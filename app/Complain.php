@@ -82,5 +82,9 @@ class Complain extends Model
     {
         return $this->hasMany('App\ComplainAction','complain_id','complain_id');
     }
+    public function setComplainDescriptionAttribute($value)
+    {
+        $this->attributes['complain_description'] = strtolower($value);
 
+    }
 }
