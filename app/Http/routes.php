@@ -37,14 +37,14 @@ Route::get('/', function () {
 
 Route::get('complain/{complain}/action','ComplainController@action')->name('complain.action');
 Route::put('complain/action/{complain}','ComplainController@update_action')->name('complain.update_action');
-Route::put('complain/verify/{id}','ComplainController@verify')->name('complain.verify');
+Route::put('complain/verify/{complain}','ComplainController@verify')->name('complain.verify');
 Route::get('complain/assets','ComplainController@get_assets');
 
 Route::get('complain/assign','ComplainController@assign')->name('complain.assign');
 Route::get('complain/{complain}/assign','ComplainController@assign_staff')->name('complain.assign_staff');
 Route::put('complain/assign/{complain}','ComplainController@update_assign_staff')->name('complain.update_assign_staff');
 
-Route::get('complain/{id}/technical_action','ComplainController@technical_action')->name('complain.technical_action');
+Route::get('complain/{complain}/technical_action','ComplainController@technical_action')->name('complain.technical_action');
 Route::put('complain/technical_action/{complain}','ComplainController@update_technical_action')->name('complain.update_technical_action');
 
 Route::get('complain/assets','ComplainController@get_assets')->name('complain.assets');

@@ -61,14 +61,14 @@
             <div class="form-group hide_byCategory">
                 <label class="col-sm-2 control-label">Aset</label>
                 <div class="col-sm-6">
-                    {{--{{$editComplain->assets->butiran}}--}}
+                    {{$editComplain->assets_name->butiran or $editComplain->ict_no}}
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">Bahagian/Unit </label>
-                <div class="col-sm-2">
+                <div class="col-sm-6">
                     <p class="form-control-static">
-                        {{$editComplain->unit_id}}
+                        {{ $editComplain->unit_no->butiran or $editComplain->unit_id }}
                     </p>
                 </div>
             </div>

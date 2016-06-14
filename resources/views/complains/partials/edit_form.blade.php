@@ -27,13 +27,13 @@
             </div>
             <label class="col-sm-2 control-label">No. Pekerja </label>
             <div class="col-sm-2">
-                <p class="form-control-static">{{$editComplain->user->name}}</p>
+                <p class="form-control-static">{{$editComplain->user->name or $editComplain->user_id}}</p>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-2 control-label">Bagi Pihak</label>
             <div class="col-sm-2">
-                <p class="form-control-static">{{$editComplain->bagiPihak->name}}</p>
+                <p class="form-control-static">{{$editComplain->bagiPihak->name or $editComplain->user_emp_id}}</p>
             </div>
         </div>
         <div class="form-group">
@@ -97,7 +97,7 @@
                 @if (!empty($hide_dropdown_category) && $hide_dropdown_category !='Y')
                     {!! Form::select('unit_id',$unit_id,$editComplain->unit_id,['class'=>'form-control chosen','id'=>'unit_id'])!!}
                 @else
-                    {{ $editComplain->unit_id }}
+                    {{ $editComplain->KodUnit->butiran or $editComplain->unit_id }}
                 @endif
             </div>
         </div>

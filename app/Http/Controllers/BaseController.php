@@ -106,8 +106,15 @@ class BaseController extends Controller
 
         else
         {
-
-            $ict_no = array(''=>'Pilih Aset Berkenaan');
+            if (env('APP_ENV') === 'testing') {
+                $ict_no = Asset::select('asset_id', DB::raw('CONCAT(asset_id, " - " , butiran) AS butiran_aset'))
+                    ->lists('butiran_aset','asset_id');
+                
+            }
+            else
+            {
+                $ict_no = array(''=>'Pilih Aset Berkenaan');
+            }
         }
 
 

@@ -18,6 +18,10 @@ class ReportPermission
      */
     public function handle($request, Closure $next)
     {
+//        if (env('APP_ENV') === 'testing') {
+//            return $next($request);
+//        }
+
         $route_name = Route::currentRouteName();
 //        $route_parameters = $request->route()->parameters();
 

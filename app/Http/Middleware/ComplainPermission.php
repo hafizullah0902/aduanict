@@ -19,6 +19,11 @@ class ComplainPermission
      */
     public function handle($request, Closure $next)
     {
+
+//        if (env('APP_ENV') === 'testing') {
+//            return $next($request);
+//        }
+
         $route_name = Route::currentRouteName();
         $route_parameters = $request->route()->parameters();
 
@@ -60,6 +65,7 @@ class ComplainPermission
         if ($route_name == 'complain.technical_action' || $route_name == 'complain.update_technical_action') {
             $this->check_entrust_permission('technical_action', $request);
 
+//            dd($route_parameters);
             $complain_id =$route_parameters['complain'];
             $complain = Complain::find($complain_id);
 

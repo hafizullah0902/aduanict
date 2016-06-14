@@ -36,9 +36,9 @@ class ComplainController extends BaseController
     public function __construct(Request $request){
 
         parent::__construct();
-
-//        $this->middleware('ComplainPermission');
         $this-> request =$request;
+        $this->middleware('ComplainPermission');
+
         
         
     }
@@ -116,7 +116,19 @@ class ComplainController extends BaseController
     }
 
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $editComplain=Complain::find($id);
+        $complain_actions = $this->get_complain_action($id);
 
+        return view('complains/show',compact('editComplain','complain_actions'));
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -203,26 +215,14 @@ class ComplainController extends BaseController
 
         Event::fire(new ComplainCreated($complain));
 
-        Flash::success('Aduan '.$id.' berjaya di hantar');
+        Flash::success('Aduan berjaya di hantar');
         return redirect(route('complain.index'));
 
 
 
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $editComplain=Complain::find($id);
-        $complain_actions = $this->get_complain_action($id);
 
-        return view('complains/show',compact('editComplain','complain_actions'));
-    }
 
     /* FUNCTION UNTUK MANAGER AGIH STAFF
     ==================================MULA========================================================================== */

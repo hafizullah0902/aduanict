@@ -49,6 +49,10 @@ namespace App\Helpers;
                     $function_button='<a href=" '.$url_link.' "class="btn btn-info">
                                                 <span class="glyphicon glyphicon-eye-open"></span> Papar</a>';
                 }
+                if (Entrust::can("delete_complain"))
+                {
+                    $function_button= $function_button.' '.'<button type="button" class="btn btn-danger glyphicon glyphicon-trash" data-destroy> Padam </button> ';
+                }
 
             }
 
@@ -114,10 +118,7 @@ namespace App\Helpers;
                 $function_button='<a href=" '.$url_link.' " class="btn btn-info">
                                             <span class="glyphicon glyphicon-eye-open"></span> Papar</a> ';
             }
-            if (Entrust::can("delete_complain"))
-                {
-                    $function_button= $function_button.' '.'<button type="button" class="btn btn-danger glyphicon glyphicon-trash" data-destroy> Padam </button>';
-                }
+
             return $function_button;
 
         }

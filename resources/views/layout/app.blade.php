@@ -79,10 +79,10 @@
                     </li>
                     @endpermission
                     <li>
-                        <a href="#">Tambah Aduan</a>
+                        <a href="{{ route('complain.create') }}">Tambah Aduan</a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="{{ route('complain.index') }}">
                             Senarai Aduan
                         </a>
                     </li>

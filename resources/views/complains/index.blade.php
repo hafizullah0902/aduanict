@@ -67,9 +67,9 @@
                         <td>{{ $rekodcomplain->complain_id }}
                         <?php $id=$rekodcomplain->complain_id; ?>
                         </td>
-                        <td>{{ $rekodcomplain->created_at }}</td>
+                        <td>{{ $rekodcomplain->created_at->format('d-m-Y h:ia') }}</td>
                         <td> @if($rekodcomplain->user)
-                                {{ $rekodcomplain->user_emp_id }} - {{$rekodcomplain->user->name }}
+                                {{ $rekodcomplain->user_emp_id }} - {{$rekodcomplain->user->full_name }}
                              @else
                                 {{ $rekodcomplain->user_emp_id }}
                              @endif
@@ -79,7 +79,7 @@
                             {!! Helper::get_status_panel($rekodcomplain->complain_status_id) !!}
                         </td>
                         <td>{{ $rekodcomplain->complain_source->description or $rekodcomplain->complain_source_id }}</td>
-                        <td>{{ $rekodcomplain->bagiPihak->name or $rekodcomplain->user_emp_id}}</td>
+                        <td>{{$rekodcomplain->user_emp_id}} - {{ $rekodcomplain->bagiPihak->full_name or $rekodcomplain->user_emp_id}}</td>
                         <td>{{ $rekodcomplain->complain_category->description or $rekodcomplain->complain_category_id}}</td>
                         <td>{{ str_limit($rekodcomplain->action_comment,40) }}</td>
                         <td>{{ $rekodcomplain->action_date }}</td>
