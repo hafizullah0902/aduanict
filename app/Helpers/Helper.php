@@ -37,11 +37,11 @@ namespace App\Helpers;
                     $function_button='<a href=" '.$url_link.'" class="btn btn-warning">
                                                 <span class="glyphicon glyphicon-wrench"></span> Kemaskini</a>';
                 }
-                elseif (Entrust::can("edit_complain")&& ($rekodcomplain->user_id==Auth::user()->emp_id || $rekodcomplain->user_emp_id==Auth::user()->emp_id))
+                elseif (Entrust::can("edit_complain")&& ($rekodcomplain->register_user_id==Auth::user()->emp_id || $rekodcomplain->user_emp_id==Auth::user()->emp_id))
                 {
                     $url_link= route("complain.edit",$rekodcomplain->complain_id);
                     $function_button='<a href=" '.$url_link.'" class="btn btn-primary">
-                                                <span class="glyphicon glyphicon-edit"></span> Kemaskini</a>';
+                                                <span class="glyphicon glyphicon-edit"></span> Kemaskini </a>';
                 }
                 else
                 {
@@ -79,7 +79,7 @@ namespace App\Helpers;
 
             elseif($rekodcomplain->complain_status_id== 3)
             {
-                if(Entrust::can("verify_complain")&& ($rekodcomplain->user_id==Auth::user()->emp_id || $rekodcomplain->user_emp_id==Auth::user()->emp_id))
+                if(Entrust::can("verify_complain")&& ($rekodcomplain->register_user_id==Auth::user()->emp_id || $rekodcomplain->user_emp_id==Auth::user()->emp_id))
                 {
                     $url_link= route("complain.edit",$rekodcomplain->complain_id);
                     $function_button='<a href=" '.$url_link.' " class="btn btn-success">

@@ -8,7 +8,8 @@
     @if($editComplain->complain_status_id==1)
 
         @include('complains.partials.edit_form')
-    @elseif($editComplain->complain_status_id==3 && ($editComplain->user_id==Auth::user()->emp_id ||$editComplain->user_emp_id==Auth::user()->emp_id))
+
+    @elseif($editComplain->complain_status_id==3 && ($editComplain->register_user_id==Auth::user()->emp_id ||$editComplain->user_emp_id==Auth::user()->emp_id))
 
         <div class="container">
             <ul class="nav nav-tabs" role="tablist">

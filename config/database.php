@@ -26,7 +26,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', 'oracle'),
 
     /*
     |--------------------------------------------------------------------------
@@ -45,6 +45,29 @@ return [
     */
 
     'connections' => [
+
+        'oracle' => [
+            'driver' => 'oracle',
+            'host' => env('DB_HOST', 'localhost'),
+            'port' => env('DB_PORT', '5432'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'UTF-8',
+            'prefix' => env('DB_PREFIX', 'forge'),
+            'schema' => 'ppzdev',
+        ],
+        'oracle2' => [
+            'driver' => 'oracle',
+            'host' => env('DB_HOST', 'localhost'),
+            'port' => env('DB_PORT', '5432'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'UTF-8',
+            'prefix' => '',
+            'schema' => 'ppzdev',
+        ],
 
         'sqlite' => [
             'driver' => 'sqlite',
@@ -65,16 +88,7 @@ return [
             'strict' => false,
             'engine' => null,
         ],
-        'oracle' => [
-            'driver' => 'oracle',
-            'host' => '10.10.1.8',
-            'port' => '1521',
-            'database' => 'sizadev',
-            'username' => 'ppzdev',
-            'password' => 'ppzdev',
-            'charset' => 'AL32UTF8',
-            'prefix' => 'V2_',
-        ],
+  
         'pgsql' => [
             'driver' => 'pgsql',
             'host' => env('DB_HOST', 'localhost'),

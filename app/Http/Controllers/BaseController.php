@@ -26,7 +26,7 @@ class BaseController extends Controller
         if(Auth::check())
         {
             $this->user_id=Auth::user()->emp_id;
-            $this->unit_id=Auth::user()->kod_id;
+            $this->unit_id=Auth::user()->unit_id;
         }
         $this-> exclude_array =[5,6];
     }
@@ -42,9 +42,18 @@ class BaseController extends Controller
 
     function get_complain_categories()
     {
-        $complain_categories = ComplainCategory::select('description', DB::raw('CONCAT(category_id, "-" , kod_unit) AS category_value'))->lists('description','category_value');
+       /* ================MYSQL====================
+       $complain_categories = ComplainCategory::select('description', DB::raw('CONCAT(category_id, "-" , kod_unit) AS category_value'))->lists('description','category_value');
         $complain_categories = array(''=>'Pilih Kategori Aduan') + $complain_categories->all();
+        return $complain_categories;*/
+
+        /* ==============ORACLE======================*/
+        $complain_categories = ComplainCategory::select('description',
+            DB::raw('category_id||\'-\'|| kod_unit AS category_value'))
+            ->lists('description','category_value');
+        $complain_categories = array(''=>'Pilih Kategori')+$complain_categories ->all();
         return $complain_categories;
+
     }
 
     function get_location($filter=array())
@@ -98,17 +107,29 @@ class BaseController extends Controller
         if(!empty($lokasi_id))
         {
 
-            $ict_no = Asset::select('asset_id', DB::raw('CONCAT(asset_id, " - " , butiran) AS butiran_aset'))
+            /*$ict_no = Asset::select('asset_id', DB::raw('CONCAT(asset_id, " - " , butiran) AS butiran_aset'))
                 ->where('lokasi_id',$lokasi_id)->lists('butiran_aset','asset_id');
 
-            $ict_no = array(''=>'Pilih Aset Berkenaan') + $ict_no->all();
+            $ict_no = array(''=>'Pilih Aset Berkenaan') + $ict_no->all();*/
+
+            /*=============ORACLE======================*/
+            $ict_no =Asset::select('ict_no', DB::raw('ict_no||\'-\'|| butiran AS butiran_aset'))
+                ->where('lokasi_id',$lokasi_id)
+                ->lists('butiran_aset', 'ict_no');
+
+            $ict_no = array(''=>'Pilih Aset') + $ict_no->all();
         }
 
         else
         {
             if (env('APP_ENV') === 'testing') {
-                $ict_no = Asset::select('asset_id', DB::raw('CONCAT(asset_id, " - " , butiran) AS butiran_aset'))
-                    ->lists('butiran_aset','asset_id');
+
+                /*$ict_no = Asset::select('asset_id', DB::raw('CONCAT(asset_id, " - " , butiran) AS butiran_aset'))
+                    ->lists('butiran_aset','asset_id');*/
+
+                /*==========ORACLE================*/
+                $ict_no =Asset::select('ict_no', DB::raw('ict_no||\'-\'|| butiran AS butiran_aset'))
+                    ->lists('butiran_aset', 'ict_no');
                 
             }
             else

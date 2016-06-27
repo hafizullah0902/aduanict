@@ -42,7 +42,7 @@ class ComplainPermission
 
             if($complain->complain_status_id==1)
             {
-                if(Auth::user()->emp_id !=$complain->user_id && Auth::user()->emp_id !=$complain->user_emp_id)
+                if(Auth::user()->emp_id !=$complain->register_user_id && Auth::user()->emp_id !=$complain->user_emp_id)
                 {
                     $this->access_denied($request);
                 }
@@ -71,7 +71,7 @@ class ComplainPermission
 
             if($complain->complain_status_id==2)
             {
-                if(Auth::user()->id !=$complain->user_id && Auth::user()->action_emp_id !=$complain->emp_id)
+                if(Auth::user()->id !=$complain->register_user_id && Auth::user()->emp_id !=$complain->action_emp_id)
                 {
                     $this->access_denied($request);
                 }
@@ -94,7 +94,7 @@ class ComplainPermission
 
             if($complain->complain_status_id==4)
             {
-                if(Auth::user()->id !=$complain->user_id && Auth::user()->emp_id !=$complain->user_emp_id)
+                if(Auth::user()->id !=$complain->register_user_id && Auth::user()->emp_id !=$complain->user_emp_id)
                 {
                     $this->access_denied($request);
                 }

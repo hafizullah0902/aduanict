@@ -46,13 +46,14 @@ class ComplainController extends BaseController
 /* ========================================FUNCTION UMUM ==============================================================*/
     public function index()
     {
-        if(Entrust::hasRole('user') || Entrust::hasRole('unit_manager'))
+        if(Entrust::hasRole('members') || Entrust::hasRole('unit_manager'))
         {
-            $complain2 =Complain::with('user','action_user')
+
+            $complain2 =Complain::with('bagiPihak','user','action_user')
                                 ->where(function($query){
                                 $query->orwhere('user_emp_id',$this->user_id)
                                 ->orwhere('action_emp_id',$this->user_id)
-                                ->orwhere('user_id',$this->user_id)
+                                ->orwhere('register_user_id',$this->user_id)
                                 ->orwhere('unit_id',$this->unit_id);
                                 });
 
@@ -165,13 +166,14 @@ class ComplainController extends BaseController
         $lokasi_id = $request->lokasi_id;
         $branch_id = $request->branch_id;
         $ict_no = $request->ict_no;
+
         $category_explode = explode('-',$request->complain_category_id );
         $complain_category_id = $category_explode[0];
         $unit_id = $category_explode[1];
 
         if(empty($user_emp_id))
         {
-            $user_emp_id = Auth::user()->emp_id;
+            $user_emp_id = number_format(Auth::user()->emp_id);
         }
 
         $aduan_category_exception_value = array('5','6');
@@ -183,37 +185,47 @@ class ComplainController extends BaseController
             $ict_no = null;
         }
 
-        $complain = new Complain;
-        $complain->user_id = $user_id;
-        $complain->complain_description = $complain_description;
-        $complain->complain_status_id = $complain_status_id;
-        $complain->user_emp_id=$user_emp_id;
-        $complain->complain_source_id=$complain_source_id;
-        $complain->unit_id=$unit_id;
-        $complain->complain_category_id=$complain_category_id;
-        $complain->lokasi_id=$lokasi_id;
-        $complain->branch_id=$branch_id;
-        $complain->ict_no=$ict_no;
+//        dd($user_id);
 
-//             return $request->all();
+        $complain = new Complain;
+        $complain->register_user_id = number_format($user_id);
+        $complain->user_emp_id = number_format($user_emp_id);
+        $complain->complain_description = $complain_description;
+        $complain->complain_status_id = number_format($complain_status_id);
+        $complain->complain_source_id = $complain_source_id;
+        $complain->unit_id=$unit_id;
+        $complain->complain_category_id = $complain_category_id;
+        $complain->lokasi_id =  $lokasi_id;
+        $complain->branch_id =  $branch_id;
+        $complain->ict_no = $ict_no;
+
+
         $complain->save();
 
-        if($request->hasFile('complain_attachment') && $request->file('complain_attachment')->isValid())
+      if($request->hasFile('complain_attachment') && $request->file('complain_attachment')->isValid())
         {
-            $fileName = $complain->complain_id.'-'.$request->file('complain_attachment')->getClientOriginalName();
+//            $fileName = $complain->complain_id.'-'.$request->file('complain_attachment')->getClientOriginalName();
+
+            $fileName = md5(time()) . '.' . $request->file('complain_attachment')->getClientOriginalExtension();
 
 //                dd($fileName);
             $destination_path = base_path().'/public/uploads/';
             $request->file('complain_attachment')->move($destination_path,$fileName);
 
-            $complain_attachment = new ComplainAttachment();
+//            $complain_attachment = new ComplainAttachment();
 
-            $complain_attachment->attachment_filename = $fileName;
-            $complain->attachments()->save($complain_attachment);
+//            $complain_attachment->attachment_filename = $fileName;
+//            $complain_attachment->attachable_id = number_format($complain->complain_id);
+//            return $request->all();
+//            $complain_attachment->save();
+//            $complain->attachments()->save($complain_attachment);
+            $complain->attachments()->create([
+                'attachment_filename' => $fileName
+            ]);
 
         }
 
-        Event::fire(new ComplainCreated($complain));
+//      Event::fire(new ComplainCreated($complain));
 
         Flash::success('Aduan berjaya di hantar');
         return redirect(route('complain.index'));
@@ -242,7 +254,7 @@ class ComplainController extends BaseController
         $editComplain=Complain::find($id);
         
         $complain_actions=$this->get_complain_action($id);
-        $unit_staff_list = User::where('kod_id',$this->unit_id)
+        $unit_staff_list = User::where('kod',$this->unit_id)
                                  ->where('emp_id','!=',$this->user_id)
                                  ->lists('name','emp_id');
 
@@ -390,7 +402,7 @@ class ComplainController extends BaseController
 
     public function get_kod_unit($filter=array())
     {
-        $unit_id = KodUnit::lists('butiran','kod_id');
+        $unit_id = KodUnit::lists('butiran','kod');
         return $unit_id;
     }
     /**
@@ -432,39 +444,34 @@ class ComplainController extends BaseController
 
     public function update(ComplainRequest $request, $id)
     {
-
         $complain=Complain::find($id);
-        
 
         $lokasi_id = $request->lokasi_id;
         $ict_no = $request->ict_no;
-        $complain_description = $request->complain_description;
+        $branch_id = $request->branch_id;
 
         if(!$request->has('hide_dropdown_category'))
         {
+            dd(2);
             $category_explode = explode('-',$request->complain_category_id );
             $complain_category_id = $category_explode[0];
             $unit_id = $category_explode[1];
-            $branch_id = $request->branch_id;
 
             $complain->action_date=Carbon::now();
-//            $complain->complain_description=$complain_description;
             $complain->complain_category_id=$complain_category_id;
             $complain->unit_id=$unit_id;
-            
         }
+
         if(!in_array($complain->complain_cotegory_id,$this->exclude_array ))
         {
             $complain->lokasi_id=$lokasi_id;
             $complain->ict_no=$ict_no;
             $complain->branch_id=$branch_id;
-        }
 
+        }
 
         Flash::success('Aduan '.$id.' berjaya dikemaskini');
         $complain->save();
-
-
 
         // return back();
         return redirect(route('complain.index'));
@@ -510,9 +517,11 @@ class ComplainController extends BaseController
 
 
         $complain->save();
-        Event::fire(new ComplainHelpdeskAction($complain));
+//        Event::fire(new ComplainHelpdeskAction($complain));
 
         // Insert dalam complain action
+
+
         if($complain_status_id>1)
         {
             $complain_action = new ComplainAction;

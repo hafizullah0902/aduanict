@@ -149,7 +149,7 @@
     );
         setInterval(function() {
             check_session();
-        }, 5000);
+        }, 150000);
 
         function check_session()
         {
@@ -174,7 +174,7 @@
                                     closeOnConfirm: false
                                 },
                                 function(isConfirm) {
-                                    
+
                                         location.reload();
                                 });
 

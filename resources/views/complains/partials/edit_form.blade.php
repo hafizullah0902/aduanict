@@ -56,7 +56,7 @@
                 <div class="col-sm-3 col-xs-10">
                     <p class="form-control-static">
 
-                            @if(Entrust::hasRole('user'))
+                            @if(Entrust::hasRole('members'))
                                 @if($editComplain->assets_location)
                                     <input type="hidden" name="branch_id" value="{{$editComplain->branch_id}}">
                                 {{ $editComplain->assets_location->branch->branch_description }}
@@ -97,7 +97,7 @@
                 @if (!empty($hide_dropdown_category) && $hide_dropdown_category !='Y')
                     {!! Form::select('unit_id',$unit_id,$editComplain->unit_id,['class'=>'form-control chosen','id'=>'unit_id'])!!}
                 @else
-                    {{ $editComplain->KodUnit->butiran or $editComplain->unit_id }}
+                    {{ $editComplain->unit_no->butiran or $editComplain->unit_id }}
                 @endif
             </div>
         </div>
