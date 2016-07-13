@@ -202,7 +202,7 @@ class ComplainController extends BaseController
 
         $complain->save();
 
-      if($request->hasFile('complain_attachment') && $request->file('complain_attachment')->isValid())
+      /*if($request->hasFile('complain_attachment') && $request->file('complain_attachment')->isValid())
         {
 //            $fileName = $complain->complain_id.'-'.$request->file('complain_attachment')->getClientOriginalName();
 
@@ -223,6 +223,21 @@ class ComplainController extends BaseController
                 'attachment_filename' => $fileName
             ]);
 
+        }*/
+        if($request->hasFile('complain_attachment') && $request->file('complain_attachment')->isValid())
+        {   //rename file to make it unique
+            $fileName = $complain->complain_id.'_'.$request->file('complain_attachment')->getClientOriginalName();
+            //set destination path
+            $destinationPath = base_path().'/public/uploads/';
+            //move/upload file
+            $request->file('complain_attachment')->move($destinationPath, $fileName);
+            $complain_attachment = new ComplainAttachment();
+            $complain_id=$complain->complain_id;
+            $complain_attachment->attachable_id=number_format($complain_id);
+            $complain_attachment->attachable_type='App\Complain';
+            $complain_attachment->attachment_filename=$fileName;
+            $complain_attachment->created_at=date("Y-m-d");
+            $complain_attachment->save();
         }
 
 //      Event::fire(new ComplainCreated($complain));
